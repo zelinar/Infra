@@ -1,0 +1,53 @@
+#SPDX-License-Identifier: MIT-0
+---
+# tasks file for install_k8s
+- block:  
+    - name: Disable Swap (temporary)
+      ansible.builtin.command: swapoff -a
+
+    - name: Disable Swap (permanent)
+      ansible.builtin.lineinfile:
+        path: /etc/fstab
+        regexp: '.*swap.*'
+        state: absent
+
+    - name: Remove k8s repo keys
+      ansible.builtin.file:
+        path: /etc/apt/keyrings/kubernetes-apt-keyring.gpg
+        state: absent
+
+    - name: Add Kubernetes repository GPG key
+      ansible.builtin.shell: curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.31/deb/Release.key |  gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
+      #curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add -
+
+    - name: Remove k8s apt repo
+      ansible.builtin.file:
+        path: /etc/apt/sources.list.d/kubernetes.list
+        state: absent
+
+    - name: Add kubernetes apt repository
+      ansible.builtin.apt_repository:
+        repo: deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.31/deb/ /
+        state: present
+        filename: kubernetes
+
+    - name: Install kubernetes packages
+      ansible.builtin.package:
+        name:
+          - kubelet=1.31.7-1.1
+          - kubeadm=1.31.7-1.1
+          - kubectl=1.31.7-1.1
+        state: present
+        update_cache: yes
+
+          #    - name: Prevent k8s from being upgraded
+          #      ansible.builtin.dpkg_selections:
+          #        name:
+          #          - kubelet
+          #          - kubeadm
+          #          - kubectl
+          #        selection: hold 
+  become: true
+
+
+    

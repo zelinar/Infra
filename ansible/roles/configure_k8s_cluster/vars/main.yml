@@ -1,0 +1,5 @@
+#SPDX-License-Identifier: MIT-0
+---
+# vars file for configure_k8s_cluster
+vagrant_home: /home/vagrant
+kubernetes_folder: /etc/kubernetes

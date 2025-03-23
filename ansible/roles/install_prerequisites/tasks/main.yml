@@ -1,0 +1,9 @@
+---
+# tasks file for install_prerequisites
+- name: Install packages
+  ansible.builtin.package:
+    name:
+      - curl
+  become: true  
+
+

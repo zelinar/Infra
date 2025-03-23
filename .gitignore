@@ -1,0 +1,38 @@
+# General
+*.log
+*.bak
+*.swp
+*.retry
+__pycache__/
+*.pyc
+.DS_Store
+
+# Ansible-specific
+*.retry
+inventory/*
+!inventory/hosts  # If you want to keep a sample inventory file
+*.vault
+secrets.yml
+*.key
+*.cfg
+*.pem
+
+# Terraform-specific
+.terraform/
+terraform.tfstate
+terraform.tfstate.*
+*.tfvars
+*.backup
+crash.log
+*.plan
+terraform.tfvars.json
+
+# SSH keys & Credentials
+*.pem
+*.key
+id_rsa
+id_rsa.pub
+.ssh/
+
+# Kubernetes-related
+.kube/

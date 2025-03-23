@@ -1,0 +1,27 @@
+#SPDX-License-Identifier: MIT-0
+---
+# tasks file for configure_hosts_file
+- block:
+    - name: Create hosts file content
+      #run_once: true
+      delegate_to: localhost
+      ansible.builtin.set_fact:
+        custom_hosts: |
+          127.0.0.1   localhost
+          ::1         localhost
+          {% for host in groups['all'] %}
+          {{ hostvars[host]['ansible_host'] }} {{ hostvars[host]['ansible_hostname'] }}
+          {% endfor %}
+    
+    - name: Display generated hosts content (for debugging)
+      ansible.builtin.debug:
+        var: custom_hosts
+    
+    - name: Write /etc/hosts file to all nodes
+      ansible.builtin.copy:
+        dest: /etc/hosts
+        content: "{{ custom_hosts }}"
+        owner: root
+        group: root
+        mode: 0644
+  become: true        

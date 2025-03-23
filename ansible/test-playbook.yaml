@@ -1,0 +1,12 @@
+- name: Test Connectivity to All Hosts
+  hosts: all
+  gather_facts: true
+  tasks:
+    - name: Ping Hosts
+      ansible.builtin.ping:
+    
+    - name: Install vim
+      ansible.builtin.package:
+        name: vim
+        state: present
+      become: true    

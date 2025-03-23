@@ -1,0 +1,6 @@
+#cloud-config
+autoinstall:
+  version: 1
+  identity:
+    password: ansible 
+    username: ansible # root doesn't work
