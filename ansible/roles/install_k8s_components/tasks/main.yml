@@ -11,7 +11,7 @@
         regexp: '.*swap.*'
         state: absent
 
-    - name: Remove k8s repo keys
+    - name: Remove k8s repo keys if they are present
       ansible.builtin.file:
         path: /etc/apt/keyrings/kubernetes-apt-keyring.gpg
         state: absent

@@ -11,7 +11,7 @@
 
     - name: Ensure modules are loaded on boot
       ansible.builtin.copy:
-        dest: /etc/modules-load.d/containerd.conf
+        dest: "{{ modules_conf }}"
         content: |
           br_netfilter
           overlay
@@ -19,7 +19,7 @@
 
     - name: Persist sysctl settings for Kubernetes networking
       ansible.builtin.copy:
-        dest: /etc/sysctl.d/99.k8s.conf
+        dest: "{{ network_conf }}"
         content: |
           net.bridge.bridge-nf-call-ip6tables = 1
           net.bridge.bridge-nf-call-iptables = 1

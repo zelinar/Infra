@@ -6,7 +6,7 @@
       #run_once: true
       delegate_to: localhost
       ansible.builtin.set_fact:
-        custom_hosts: |
+        custom_hosts_file: |
           127.0.0.1   localhost
           ::1         localhost
           {% for host in groups['all'] %}
@@ -15,12 +15,12 @@
     
     - name: Display generated hosts content (for debugging)
       ansible.builtin.debug:
-        var: custom_hosts
+        var: custom_hosts_file
     
     - name: Write /etc/hosts file to all nodes
       ansible.builtin.copy:
-        dest: /etc/hosts
-        content: "{{ custom_hosts }}"
+        dest: "{{ hosts_dest }}"
+        content: "{{ custom_hosts_file }}"
         owner: root
         group: root
         mode: 0644

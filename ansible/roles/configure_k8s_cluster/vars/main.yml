@@ -3,3 +3,5 @@
 # vars file for configure_k8s_cluster
 vagrant_home: /home/vagrant
 kubernetes_folder: /etc/kubernetes
+caliclo_url: https://raw.githubusercontent.com/projectcalico/calico/v3.29.2/manifests/calico.yaml
+pod_cidr: 190.160.0.0/16

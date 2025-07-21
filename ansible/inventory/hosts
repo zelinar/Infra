@@ -1,3 +1,8 @@
+#physical infrastructure
+[proxmox_hosts]
+homelab-server ansible_host=10.10.20.20 ansible_ssh_port=22 ansible_user=root
+
+#VM infrastructure
 [control_plane]
 control-plane ansible_host=192.168.1.142 ansible_ssh_port=22  ansible_ssh_user=vagrant ansible_ssh_private_key_file=~/.vagrant.d/insecure_private_key
 

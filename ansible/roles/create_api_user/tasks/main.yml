@@ -1,0 +1,24 @@
+---
+# tasks file for create_api_user
+    - name: Create Terraform API user
+      ansible.builtin.command: /usr/sbin/pveum user add terraform@pve -comment "API user for Terraform"
+        
+    - name: Createa a group
+      ansible.builtin.command: /usr/sbin/pveum group add terraform-group -comment "Group for Terraform API users" 
+
+    - name: Create role with necessary privileges
+      ansible.builtin.command: /usr/sbin/pveum role add terraform-role -privs "Datastore.AllocateSpace Datastore.Audit Pool.Allocate Sys.Audit Sys.Console Sys.Modify VM.Allocate VM.Audit VM.Clone VM.Config.CDROM VM.Config.CPU VM.Config.Cloudinit VM.Config.Disk VM.Config.HWType VM.Config.Memory VM.Config.Network VM.Config.Options VM.Migrate VM.Monitor VM.PowerMgmt SDN.Use"
+
+    - name: Associate group and role
+      ansible.builtin.command: /usr/sbin/pveum user modify terraform@pve -group terraform-group
+    
+    - name: Assign role to Terraform group
+      ansible.builtin.command: /usr/sbin/pveum acl modify / -group terraform-group -role terraform-role
+
+    - name: Create API token for Terraform user
+      ansible.builtin.command: /usr/sbin/pveum user token add terraform@pve terraform-token --privsep 1
+      register: token_output            
+
+    - name: Display token secret (save this!)
+      ansible.builtin.debug:
+        msg: "Terraform API Token created. Save this secret: {{ token_output.stdout }}"  

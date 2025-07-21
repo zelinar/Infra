@@ -1,3 +1,4 @@
 #SPDX-License-Identifier: MIT-0
 ---
 # vars file for set_hostname
+ hostname_path: /etc/hostname

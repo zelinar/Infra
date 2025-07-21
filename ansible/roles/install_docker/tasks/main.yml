@@ -19,16 +19,16 @@
 
     - name: Add Dockers official GPG key
       ansible.builtin.command:
-        cmd: curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
+        cmd: curl -fsSL {{ docker_keys }} -o {{ docker_keyring }}
         
     - name: Change file ownership, group and permissions
       ansible.builtin.file:
-        path: /etc/apt/keyrings/docker.asc
+        path: "{{ docker_keyring }}"
         mode: a+r       
         
     - name: Add Docker apt repository
       ansible.builtin.apt_repository:
-        repo: deb [arch=amd64 signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu focal stable
+        repo: "{{ ubuntu_repository }}"
         state: present
         filename: docker
 

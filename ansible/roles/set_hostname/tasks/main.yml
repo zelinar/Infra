@@ -8,6 +8,6 @@
     
     - name: Ensure /etc/hostname is updated
       lineinfile:
-        path: /etc/hostname
+        path: "{{ hostname_path }}"
         line: "{{ inventory_hostname }}"
   become: true        

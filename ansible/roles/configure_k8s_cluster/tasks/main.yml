@@ -8,14 +8,14 @@
   ignore_errors: true
 
 - block:
-  #  - name: Initialize Kubernetes
-   #   when: inventory_hostname in groups['control_plane']
-  #    ansible.builtin.shell: kubeadm init --pod-network-cidr=190.160.0.0/16 --kubernetes-version 1.31.7
-  #    register: kubeadm_init
+    - name: Initialize Kubernetes
+      when: inventory_hostname in groups['control_plane']
+      ansible.builtin.shell: kubeadm init --pod-network-cidr={{ pod_cidr }} --kubernetes-version {{ k8s_version }}
+      register: kubeadm_init
 
-  #  - name: Print out output of kubeadm init
-  #    ansible.builtin.debug:
-  #      var: kubeadm_init
+    - name: Print out output of kubeadm init
+      ansible.builtin.debug:
+        var: kubeadm_init
  
     - name: Register output of token list
       when: inventory_hostname in groups['control_plane']
@@ -51,10 +51,31 @@
         owner: "{{ ansible_user }}"
         mode: '0644'
         remote_src: true
-    
-    - name: Apply CNI Plugin (Calico)
+
+    - name: CHeck if ~/.kube folder exist on localhost
+      delegate_to: localhost
+      ansible.builtin.stat:
+        path: ~/.kube
+      register: dir
+
+    - name: Create ~/.kubec if not exist
+      delegate_to: localhost
+      ansible.builtin.file:
+        state: directory
+        path: ~/.kube 
+        mode: '0755'
+
+    - name: Copy kube config to localhost
       when: inventory_hostname in groups['control_plane']
-      ansible.builtin.shell: sudo -u {{ ansible_user }} kubectl apply -f https://raw.githubusercontent.com/projectcalico/calico/v3.29.2/manifests/calico.yaml 
+      ansible.builtin.fetch:     
+        src: "{{ kubernetes_folder }}/admin.conf"
+        dest: ~/.kube/admin.conf
+        owner: "{{ ansible_user }}"
+        mode: '0644'
+
+    - name: Deploy calico CNI plugin 
+      when: inventory_hostname in groups['control_plane']
+      ansible.builtin.shell: sudo -u {{ ansible_user }} kubectl apply -f {{ calico_url }} 
       register: calico_output
 
     - name: Print out calico 
@@ -87,7 +108,7 @@
         #     #when: inventory_hostname in groups['control_plane']
 
   become: true
-  #when: cluster_status.rc == 1 and inventory_hostname in groups['control_plane']
+  when: cluster_status.rc == 1   # and inventory_hostname in groups['control_plane']
   
 
 
