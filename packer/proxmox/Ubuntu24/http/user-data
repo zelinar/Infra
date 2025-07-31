@@ -1,0 +1,24 @@
+#cloud-config
+autoinstall:
+  version: 1
+  locale: en_US
+  keyboard:
+    layout: us
+  storage:
+    layout:
+      name: lvm
+  identity:
+    hostname: ubuntu
+    username: ansible
+    password: "$6$69mHWwBdPnTeFv5q$9xc/dU7O1EcRP.kDsYno2UUE2nhvJdTMNjY7yG1dqvsBAUZrBYYeJ8TkgliGydFopGX/F1gRMart3wJED2YWH."
+  ssh:
+    install-server: yes
+    allow-pw: yes
+  user-data:
+    disable_root: false
+
+  late-commands:
+    - curtin in-target -- bash -c 'systemctl enable ssh.service'
+    - curtin in-target -- bash -c 'until ping -c1 8.8.8.8; do sleep 5; done'
+    - curtin in-target -- bash -c 'sudo apt update'
+    - curtin in-target -- bash -c 'sudo apt install qemu-guest-agent -y'

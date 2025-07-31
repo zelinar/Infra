@@ -1,0 +1,5 @@
+validate config:
+packer validate -var-file='../../credentials.pkr.hcl' ubuntu24.pkr.hcl
+
+build:
+packer build -var-file='../../credentials.pkr.hcl' ubuntu24.pkr.hcl
