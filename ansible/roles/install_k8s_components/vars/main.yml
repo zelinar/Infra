@@ -1,3 +1,7 @@
 #SPDX-License-Identifier: MIT-0
 ---
 # vars file for install_k8s
+#k8s_repo_version: v1.31
+#k8s_version: 1.31.7-1.1
+k8s_repo_version: v1.33
+k8s_version: 1.33.3-1.1

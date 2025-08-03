@@ -2,51 +2,63 @@
 ---
 # tasks file for install_k8s
 - block:  
-    - name: Disable Swap (temporary)
-      ansible.builtin.command: swapoff -a
-
-    - name: Disable Swap (permanent)
-      ansible.builtin.lineinfile:
-        path: /etc/fstab
-        regexp: '.*swap.*'
-        state: absent
-
-    - name: Remove k8s repo keys if they are present
+    - name: Remove k8s repo GPG keys if they are present
       ansible.builtin.file:
         path: /etc/apt/keyrings/kubernetes-apt-keyring.gpg
         state: absent
 
-    - name: Add Kubernetes repository GPG key
+    - name: Add k8s repository GPG key
       ansible.builtin.shell: curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.31/deb/Release.key |  gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
       #curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add -
 
-    - name: Remove k8s apt repo
+    - name: Remove k8s apt repo if it's presented
       ansible.builtin.file:
         path: /etc/apt/sources.list.d/kubernetes.list
         state: absent
 
-    - name: Add kubernetes apt repository
+    - name: Add k8s apt repository
       ansible.builtin.apt_repository:
-        repo: deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.31/deb/ /
+        repo: deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/{{ k8s_repo_version }}/deb/ /
         state: present
         filename: kubernetes
 
-    - name: Install kubernetes packages
+    - name: Install k8s packages
       ansible.builtin.package:
         name:
-          - kubelet=1.31.7-1.1
-          - kubeadm=1.31.7-1.1
-          - kubectl=1.31.7-1.1
+          - kubelet={{ k8s_version }}
+          - kubeadm={{ k8s_version }}
+          - kubectl={{ k8s_version }}
         state: present
-        update_cache: yes
+        update_cache: true
 
-          #    - name: Prevent k8s from being upgraded
-          #      ansible.builtin.dpkg_selections:
-          #        name:
-          #          - kubelet
-          #          - kubeadm
-          #          - kubectl
-          #        selection: hold 
+    # - name: Hold kubelet, kubeadm, kubectl
+    #   ansible.builtin.command: apt-mark hold kubelet kubeadm kubectl
+    #   args:
+    #     warn: false
+
+    # - name: Show held packages
+    #   ansible.builtin.command: apt-mark showhold
+    #   register: held
+    # - debug:
+    #     var: held.stdout_lines
+
+    # - name: Prevent k8s from being upgraded
+    #   ansible.builtin.dpkg_selections:
+    #       - name: kubelet
+    #         selection: hold
+    #       - name: kubeadm
+    #         selection: hold
+    #       - name: kubectl
+    #         selection: hold 
+
+    # - name: Verify holds are in place
+    #   ansible.builtin.dpkg_selections:
+    #     state: list
+    #   register: dpkg_list
+
+    # - name: Show held kube packages
+    #   debug:
+    #     msg: "{{ dpkg_list.selections | selectattr('name', 'in', ['kubelet','kubeadm','kubectl']) | list }}"  
   become: true
 
 

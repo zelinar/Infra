@@ -1,0 +1,5 @@
+---
+# vars file for install_containerd
+docker_keys: https://download.docker.com/linux/ubuntu/gpg
+docker_keyring: /etc/apt/keyrings/docker.asc
+ubuntu_repository: deb [arch=amd64 signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu noble stable

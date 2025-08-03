@@ -37,7 +37,7 @@
   run_once: true
 
 
-- name: Get latest version information of kubernetes
+- name: Get latest version information of k8s
   delegate_to: localhost
   run_once: true
   uri:

@@ -1,0 +1,8 @@
+# Managed by Ansible for Kubernetes cluster
+127.0.0.1   localhost
+::1         localhost
+
+{% set all_nodes = (groups['control_plane_prx'] | default([])) + (groups['workers_prx'] | default([])) | unique | sort %}
+{% for host in all_nodes %}
+{{ hostvars[host].ansible_host | default(host) }} {{ hostvars[host].ansible_hostname }} 
+{% endfor %}

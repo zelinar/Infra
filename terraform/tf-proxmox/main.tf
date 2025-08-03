@@ -11,8 +11,6 @@ terraform {
   pm_api_url      = var.pm_api_url
   pm_api_token_id = var.pm_api_token_id
   pm_api_token_secret = var.pm_api_token_secret
-#   pm_api_token_id = "terraform@pve!terraform-token"
-#   pm_api_token_secret = "a5ab4f29-a815-4618-8e78-ce9c4c9a9f6e"
   pm_tls_insecure = var.pm_tls_insecure
 }
 
@@ -26,15 +24,10 @@ resource "proxmox_vm_qemu" "ubuntu"{
   name        = each.value.name
   target_node = var.target_node
   clone       = var.template_name
-  full_clone  = true
-
-
-  #name        = "ubuntu-vm01"
-  #target_node = var.target_node
-  #clone       = var.template_name   # cloud-init template name
-  #full_clone  = true
-  agent       = 1
-  skip_ipv6 = true
+  full_clone  = var.full_clone
+ 
+  agent       = var.agent
+  skip_ipv6   = var.skip_ipv6
   
 
   cpu {
@@ -71,12 +64,13 @@ resource "proxmox_vm_qemu" "ubuntu"{
         
       
   network {
-    id = 0
+    id       = var.net_id
     model    = var.net_model
     bridge   = var.net_bridge
   }
 
   os_type = var.os_type
+
   #CIDR notation
   ipconfig0 = "ip=${each.value.ip}/${var.net_cidr},gw=${var.gateway}"
 

@@ -1,5 +1,5 @@
 - name: Install and configure the kubernetes cluster on linux nodes
-  hosts: control_plane, worker1, worker2
+  hosts: control_plane_prx, workers_prx
   roles:
     - name: Install prerequisites
       role: install_prerequisites 
@@ -9,19 +9,23 @@
 
     - name: Set hostnames
       role: set_hostname
-    
+      
+
     - name: Configure /etc/hosts file
       role: configure_hosts_file
+           
 
     - name: Sys config
       role: system_configuration
+      
 
-    - name: Install docker
-      role: install_docker 
-
+    - name: Install container runtime 
+      role: install_containerd 
+      
     - name: Install kubernetes packages, kublet,kubeadm,kubectl
       role: install_k8s_components
+      tags: [test]
 
     - name: Initialize k8s cluster
       role: configure_k8s_cluster   
-      tags: [ test ]
+      

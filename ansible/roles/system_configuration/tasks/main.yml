@@ -2,6 +2,18 @@
 ---
 # tasks file for system_configuration
 - block:
+    - name: Set timezone on k8s nodes
+      ansible.builtin.command: timedatectl set-timezone "Europe/Prague"   
+
+    - name: Disable Swap (temporary)
+      ansible.builtin.command: swapoff -a
+
+    - name: Disable Swap (permanent)
+      ansible.builtin.lineinfile:
+        path: /etc/fstab
+        regexp: '.*swap.*'
+        state: absent
+
     - name: Load kernel modules immidietly
       ansible.builtin.command:
         cmd: modprobe {{ item }}
@@ -17,14 +29,24 @@
           overlay
         mode: '0644'
 
-    - name: Persist sysctl settings for Kubernetes networking
-      ansible.builtin.copy:
+    - name: Template network config
+      ansible.builtin.template:
+        src: templates/network_conf.j2
         dest: "{{ network_conf }}"
-        content: |
-          net.bridge.bridge-nf-call-ip6tables = 1
-          net.bridge.bridge-nf-call-iptables = 1
-          net.ipv4.ip_forward
+        owner: root
+        group: root
         mode: '0644'
-        notify:
-        - apply sysctl
+
+    - name: Apply new network conf
+      ansible.builtin.shell: sudo sysctl --system    
+    
+    # - name: Persist sysctl settings for Kubernetes networking
+    #   ansible.builtin.copy:
+    #     dest: "{{ network_conf }}"
+    #     content: |
+    #       net.bridge.bridge-nf-call-ip6tables = 1
+    #       net.bridge.bridge-nf-call-iptables = 1
+    #       net.ipv4.ip_forward = 1
+    #     mode: '0644'
+      
   become: true          

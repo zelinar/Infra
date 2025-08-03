@@ -1,10 +1,6 @@
 Role Name
 =========
 
-This role is oboslate and depracated - Dockershim has been removed from the Kubernetes project as of release 1.24
-Don't use this role, instead use containerd
-
-
 A brief description of the role goes here.
 
 Requirements

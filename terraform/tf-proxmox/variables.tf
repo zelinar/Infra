@@ -31,6 +31,16 @@ variable "vms" {
   }))
 }
 
+variable "full_clone" {
+  type    = bool
+  default = true
+}
+
+variable "agent" {
+  type    = number
+  default = 1
+}
+
 variable "cpu_type" {
   type    = string
   default = "host"
@@ -81,6 +91,11 @@ variable "disk_storage" {
   default = "VM-storage"
 }
 
+variable "net_id" {
+  type    = number
+  default = 0
+}
+
 variable "net_model" {
   type    = string
   default = "virtio"
@@ -100,3 +115,9 @@ variable "gateway" {
   type    = string
   default = "10.10.20.1"
 }
+
+variable "skip_ipv6" {
+  type    = bool
+  default = true
+}
+

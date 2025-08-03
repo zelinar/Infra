@@ -1,56 +1,63 @@
 #SPDX-License-Identifier: MIT-0
 ---
 # tasks file for configure_k8s_cluster
-- name: Check if cluster is already initialiezd
-  when: inventory_hostname in groups['control_plane']
-  ansible.builtin.shell: kubectl get nodes
-  register: cluster_status
-  ignore_errors: true
+# - name: Check if cluster is already initialiezd
+#  # when: inventory_hostname in groups['control_plane_prx']
+#   ansible.builtin.shell: kubectl get nodes
+#   register: cluster_status
+#   ignore_errors: true
 
 - block:
-    - name: Initialize Kubernetes
-      when: inventory_hostname in groups['control_plane']
+    - name: Initialize k8s cluster
+      when: inventory_hostname in groups['control_plane_prx']
       ansible.builtin.shell: kubeadm init --pod-network-cidr={{ pod_cidr }} --kubernetes-version {{ k8s_version }}
       register: kubeadm_init
+      become: true
 
     - name: Print out output of kubeadm init
       ansible.builtin.debug:
         var: kubeadm_init
  
     - name: Register output of token list
-      when: inventory_hostname in groups['control_plane']
+      when: inventory_hostname in groups['control_plane_prx']
       ansible.builtin.shell: kubeadm token list
       register: token_list
+      become: true
 
     - name: Print out token list
       ansible.builtin.debug:
         var: token_list
 
-    - name: Generate & save join command
-      when: inventory_hostname in groups['control_plane']
-      ansible.builtin.shell: kubeadm token create --print-join-command > "{{ vagrant_home }}/.kube/join_cluster"
-
-    - name: Fetch join command to /tmp
-      when: inventory_hostname in groups['control_plane']  
-      ansible.builtin.fetch:
-        src: "{{ vagrant_home }}/.kube/join_cluster"
-        dest: /tmp/join_cluster
-        flat: true
-
     - name: Create .kube dir
       ansible.builtin.file:
-        path: "{{ vagrant_home }}/.kube"
+        path: "{{ ansible_home }}/.kube"
         state: directory
         owner: "{{ ansible_user }}"
+        mode: "0764"
+      become: true  
+
+    - name: Generate & save join command
+      when: inventory_hostname in groups['control_plane_prx']
+      ansible.builtin.shell: kubeadm token create --print-join-command > "{{ ansible_home }}/.kube/join_cluster"
+      become: true
+
+    - name: Fetch join command to /tmp
+      when: inventory_hostname in groups['control_plane_prx']  
+      ansible.builtin.fetch:
+        src: "{{ ansible_home }}/.kube/join_cluster"
+        dest: /tmp/join_cluster
+        flat: true
+      become: true  
         
     - name: Copy kube config to ./kube
-      when: inventory_hostname in groups['control_plane']
+      when: inventory_hostname in groups['control_plane_prx']
       ansible.builtin.copy:
         src: "{{ kubernetes_folder }}/admin.conf"
-        dest: "{{ vagrant_home }}/.kube/config"
+        dest: "{{ ansible_home }}/.kube/config"
         owner: "{{ ansible_user }}"
         mode: '0644'
         remote_src: true
+      become: true  
 
     - name: CHeck if ~/.kube folder exist on localhost
       delegate_to: localhost
@@ -58,7 +65,7 @@
         path: ~/.kube
       register: dir
 
-    - name: Create ~/.kubec if not exist
+    - name: Create ~/.kubec if not exist on localhost
       delegate_to: localhost
       ansible.builtin.file:
         state: directory
@@ -66,34 +73,37 @@
         mode: '0755'
 
     - name: Copy kube config to localhost
-      when: inventory_hostname in groups['control_plane']
+      when: inventory_hostname in groups['control_plane_prx']
       ansible.builtin.fetch:     
         src: "{{ kubernetes_folder }}/admin.conf"
-        dest: ~/.kube/admin.conf
-        owner: "{{ ansible_user }}"
+        dest: /home/{{ home_owner }}/.kube/admin.conf
+        owner: "{{ home_owner }}"
         mode: '0644'
+        flat: true
 
     - name: Deploy calico CNI plugin 
-      when: inventory_hostname in groups['control_plane']
+      when: inventory_hostname in groups['control_plane_prx']
       ansible.builtin.shell: sudo -u {{ ansible_user }} kubectl apply -f {{ calico_url }} 
       register: calico_output
+      become: true
 
     - name: Print out calico 
       ansible.builtin.debug:
         var: calico_output   
 
     - name: Copy join command to worker nodes
-      when: inventory_hostname in groups['workers']
+      when: inventory_hostname in groups['workers_prx']
       ansible.builtin.copy:
         src: /tmp/join_cluster
-        dest: "{{ vagrant_home }}/.kube/join_cluster"
+        dest: "{{ ansible_home }}/.kube/join_cluster"
         owner: "{{ ansible_user }}"
         mode: "0744"
 
     - name: Join worker nodes to cluster
-      when: inventory_hostname in groups['workers']
-      ansible.builtin.shell: /bin/sh {{ vagrant_home }}/.kube/join_cluster
+      when: inventory_hostname in groups['workers_prx']
+      ansible.builtin.shell: /bin/sh {{ ansible_home }}/.kube/join_cluster
       register: join_output
+      become: true
 
     - name: Print output of join command
       ansible.builtin.debug:
@@ -107,8 +117,9 @@
         #     ansible.builtin.shell: echo "hovno" > /tmp/test1
         #     #when: inventory_hostname in groups['control_plane']
 
-  become: true
-  when: cluster_status.rc == 1   # and inventory_hostname in groups['control_plane']
+  
+  #when: cluster_status is defined and (cluster_status.rc | default(0)) == 1
+  #when: cluster_status.rc == 1   # and inventory_hostname in groups['control_plane_prx']
   
 
 

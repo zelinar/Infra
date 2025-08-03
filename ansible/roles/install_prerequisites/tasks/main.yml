@@ -6,4 +6,13 @@
       - curl
   become: true  
 
+# - name: Update all packages
+#   ansible.builtin.apt:
+#     name: "*"
+#     state: latest
+#     update_cache: true
+#   become: true  
+
+
+
 
