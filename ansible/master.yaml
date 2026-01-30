@@ -10,15 +10,12 @@
     - name: Set hostnames
       role: set_hostname
       
-
     - name: Configure /etc/hosts file
       role: configure_hosts_file
            
-
     - name: Sys config
       role: system_configuration
       
-
     - name: Install container runtime 
       role: install_containerd 
       

@@ -3,3 +3,10 @@ proxmox_api_url = "https://10.10.20.20:8006/api2/json"  # Your Proxmox IP Addres
 #proxmox_api_token_secret = "d6b93a45-c96b-4cbe-a1e4-bc1c38d4ad7a"
 proxmox_api_token_id = "root@pam!root-token"
 proxmox_api_token_secret = "c399f294-89a9-4a90-a3c7-38ac066503e6"
+
+#VM HW
+vm_id = 100
+disk_size = "500G"
+template_name = "ubuntu25-server-template"
+cpu_cores = 2
+memory = 2048

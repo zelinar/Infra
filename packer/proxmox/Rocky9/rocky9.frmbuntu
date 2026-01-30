@@ -1,6 +1,6 @@
-# Ubuntu24 server 
+# Rocky9 server 
 # ---
-# Packer Template to create an Ubuntu24 Server on Proxmox
+# Packer config to create a Rocky9 template on Proxmox
 
 # Proxmomx plugin - run packer init to install it
 packer {
@@ -13,9 +13,12 @@ packer {
 }
 
 
+locals {
+    disk_storage = var.disk_storage
+}
 
 # Resource Definiation for the VM Template
-source "proxmox-iso" "ubuntu24" {
+source "proxmox-iso" "rocky9" {
 
     # Proxmox Connection Settings
     proxmox_url = var.proxmox_api_url
@@ -30,7 +33,6 @@ source "proxmox-iso" "ubuntu24" {
     vm_id                = var.vm_id
     vm_name              = var.template_name
     template_description = var.template_description
-    
 
     # VM OS Settings
     # (Option 1) Local ISO File on proxmomx server
@@ -53,8 +55,6 @@ source "proxmox-iso" "ubuntu24" {
     qemu_agent = var.qemu_agent
 
     # VM HW Settings
-    bios = "seabios"
-    machine = "q35"
     scsi_controller = var.scsi_controller
     disks {
         disk_size         = var.disk_size
@@ -79,18 +79,21 @@ source "proxmox-iso" "ubuntu24" {
     
     
     # PACKER Boot Commands
-    boot         = "c"
+    #boot         = "c"
     boot_wait    = "5s"
     boot_command = [
-        "c<wait>",
-         "linux /casper/vmlinuz autoinstall ds=\"nocloud-net;s=http://{{ .HTTPIP }}:{{ .HTTPPort }}/\"<enter><wait>",
-         "initrd /casper/initrd<enter><wait>",
-         "boot<enter><wait>"
+        "e<wait>",
+        # go to the kernel line (down to 'linux' line)
+        "<down><down><down><end>",
+        " inst.text inst.ks=http://{{ .HTTPIP }}:{{ .HTTPPort }}/ks.cfg",
+        " console=tty0 console=ttyS0,115200n8",
+        "<f10>"
+       
        ]
 
     # Useful for debugging
     # Sometimes lag will require this
-    boot_key_interval = "50ms"
+    # boot_key_interval = "500ms"
 
     # PACKER Autoinstall Settings
     http_directory = var.http_dir
@@ -103,20 +106,21 @@ source "proxmox-iso" "ubuntu24" {
     ssh_username = var.ssh_username
     # (Option 1) Add your Password here
     ssh_password = var.ssh_psw 
+    # Raise the timeout, when installation takes longer
+    ssh_timeout = "20m"
 
     # - or -
     # (Option 2) Add your Private SSH KEY file here
     # ssh_private_key_file = "~/.ssh/id_rsa"
 
-    # Raise the timeout, when installation takes longer
-    ssh_timeout = "40m"
+    
 }
 
 # Build Definition to create the VM Template
 build {
 
-    name    = "ubuntu24-server"
-    sources = ["source.proxmox-iso.ubuntu24"]
+    name    = "rocky9-server"
+    sources = ["source.proxmox-iso.rocky9"]
 
     # Provisioning the VM Template for Cloud-Init Integration in Proxmox #1
     provisioner "shell" {
@@ -125,10 +129,7 @@ build {
             #"echo 'Ansible-23!' | sudo -S netplan apply"
             "echo 'Ansible-23!' | sudo -S  rm -f /etc/netplan/50-cloud-init.yaml",
             "echo 'Ansible-23!' | sudo -S  cloud-init clean",
-            "echo 'Ansible-23!' | sudo -S  truncate -s 0 /etc/machine-id",
-            "echo 'Ansible-23!' | sudo pvresize /dev/sda3",
-            "echo 'Ansible-23!' | sudo lvextend -l +100%FREE /dev/mapper/ubuntu--vg-ubuntu--lv",
-            "echo 'Ansible-23!' | sudo resize2fs /dev/mapper/ubuntu--vg-ubuntu--lv"
+            "echo 'Ansible-23!' | sudo -S  truncate -s 0 /etc/machine-id"
         ]
     }
 
