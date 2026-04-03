@@ -15,15 +15,31 @@ terraform {
 }
 
 locals {
-  # Map of VM definitions: name -> ip
-  vms = { for vm in var.vms : vm.name => vm }
+  # Flatten VM definitions
+  vms = {
+    for vm in flatten([
+      for group_name, group in var.vm_groups : [
+        for vm in group.vms : {
+          name         = vm.name
+          ip           = vm.ip
+          group        = group_name
+          target_node  = group.target_node
+          template     = group.template_name
+          gateway      = group.gateway
+          disk_size_gb = group.disk_size_gb
+          memory_mb    = group.memory_mb
+          onboot       = group.onboot 
+        }
+      ]
+    ]) : vm.name => vm
+  }  
 }
 
 resource "proxmox_vm_qemu" "ubuntu"{
   for_each    = local.vms 
   name        = each.value.name
-  target_node = var.target_node
-  clone       = var.template_name
+  target_node = each.value.target_node
+  clone       = each.value.template
   full_clone  = var.full_clone
  
   agent       = var.agent
@@ -37,10 +53,11 @@ resource "proxmox_vm_qemu" "ubuntu"{
   }
   
   
-  memory      = var.memory_mb
+  memory      = each.value.memory_mb
   scsihw      = var.scsihw
   bootdisk    = var.bootdisk
   boot        = var.boot_order
+  onboot      = each.value.onboot
 
   # Must specify root drive and cloudinit
   disks {
@@ -54,7 +71,7 @@ resource "proxmox_vm_qemu" "ubuntu"{
         scsi {
           scsi0 {
              disk {
-                size    = var.disk_size_gb
+                size    = each.value.disk_size_gb
                 storage  = var.disk_storage
              }
             

@@ -15,20 +15,25 @@ variable "pm_tls_insecure" {
   default = true
 }
 
-variable "target_node" {
-  type = string
-}
+# variable "target_node" {
+#   type = string
+# }
 
-variable "template_name" {
-  type = string
-}
+# variable "template_name" {
+#   type = string
+# }
 
-variable "vms" {
-  description = "List of objects with name and ip for each VM"
-  type = list(object({
-    name = string
-    ip   = string
-  }))
+# variable "vms" {
+#   description = "List of objects with name and ip for each VM"
+#   type = list(object({
+#     name = string
+#     ip   = string
+#   }))
+# }
+
+variable "vm_groups" {
+  description = "Grouped VM definitions"
+  type        = any
 }
 
 variable "full_clone" {
@@ -74,6 +79,11 @@ variable "bootdisk" {
 variable "boot_order" {
   type    = string
   default = "order=scsi0"
+}
+
+variable "onboot" {
+  type    = bool
+  default = false
 }
 
 variable "os_type" {
