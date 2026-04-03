@@ -1,11 +1,12 @@
 - name: Install and configure the kubernetes cluster on linux nodes
-  hosts: control_plane_prx, workers_prx
+  hosts: control_plane_prx_02, workers_prx_02
+  gather_facts: true
   roles:
     - name: Install prerequisites
       role: install_prerequisites 
 
-    - name: Install checkm sw version
-      role: check_sw_versions
+    # - name: Install checkm sw version
+    #   role: check_sw_versions
 
     - name: Set hostnames
       role: set_hostname
@@ -25,4 +26,8 @@
 
     - name: Initialize k8s cluster
       role: configure_k8s_cluster   
+
+    - name: Deply clsuter addons
+      role: deploy_cluster_addons
+      tags: [addons]  
       

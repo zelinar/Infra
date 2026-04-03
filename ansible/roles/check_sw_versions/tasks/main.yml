@@ -2,6 +2,7 @@
 - name: Get latest version information of runc
   delegate_to: localhost
   run_once: true
+  become: false
   uri:
     url: https://api.github.com/repos/opencontainers/runc/releases/latest
     method: GET

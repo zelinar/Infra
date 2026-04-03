@@ -1,0 +1,26 @@
+---
+# vars file for deploy_cluster_addons
+home_owner: martin
+kubeconfig_path: /home/martin/.kube/admin_k8s-02-control-plane.conf
+
+##############
+###METALLB####
+metallb_values: /home/martin/Documents/INFRA/git/Helm_Charts/metallb/values.yaml
+metallb_chart: /home/martin/Documents/INFRA/git/Helm_Charts/metallb/
+metallb_ippool_values: /home/martin/Documents/INFRA/git/Helm_Charts/metallb/custom-ip-pool/values.yaml
+metallb_ippool_chart: /home/martin/Documents/INFRA/git/Helm_Charts/metallb/custom-ip-pool
+metallb_namespace: metallb
+
+
+##############
+###TRAEFIK####
+traefik_values: /home/martin/Documents/INFRA/git/Helm_Charts/traefik/values.yaml
+traefik_chart: /home/martin/Documents/INFRA/git/Helm_Charts/traefik/
+traefik_namespace: traefik
+
+
+##############
+###LONGHORN###
+longhorn_values: /home/martin/Documents/INFRA/git/Helm_Charts/longhorn/values.yaml
+longhorn_chart: /home/martin/Documents/INFRA/git/Helm_Charts/longhorn/
+longhorn_namespace: longhorn-system

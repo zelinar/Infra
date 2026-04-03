@@ -9,7 +9,7 @@
 
 - block:
     - name: Initialize k8s cluster
-      when: inventory_hostname in groups['control_plane_prx']
+      when: inventory_hostname in groups['control_plane']
       ansible.builtin.shell: kubeadm init --pod-network-cidr={{ pod_cidr }} --kubernetes-version {{ k8s_version }}
       register: kubeadm_init
       become: true
@@ -19,7 +19,7 @@
         var: kubeadm_init
  
     - name: Register output of token list
-      when: inventory_hostname in groups['control_plane_prx']
+      when: inventory_hostname in groups['control_plane']
       ansible.builtin.shell: kubeadm token list
       register: token_list
       become: true
@@ -37,12 +37,12 @@
       become: true  
 
     - name: Generate & save join command
-      when: inventory_hostname in groups['control_plane_prx']
+      when: inventory_hostname in groups['control_plane']
       ansible.builtin.shell: kubeadm token create --print-join-command > "{{ ansible_home }}/.kube/join_cluster"
       become: true
 
     - name: Fetch join command to /tmp
-      when: inventory_hostname in groups['control_plane_prx']  
+      when: inventory_hostname in groups['control_plane']  
       ansible.builtin.fetch:
         src: "{{ ansible_home }}/.kube/join_cluster"
         dest: /tmp/join_cluster
@@ -50,7 +50,7 @@
       become: true  
         
     - name: Copy kube config to ./kube
-      when: inventory_hostname in groups['control_plane_prx']
+      when: inventory_hostname in groups['control_plane']
       ansible.builtin.copy:
         src: "{{ kubernetes_folder }}/admin.conf"
         dest: "{{ ansible_home }}/.kube/config"
@@ -62,27 +62,34 @@
     - name: CHeck if ~/.kube folder exist on localhost
       delegate_to: localhost
       ansible.builtin.stat:
-        path: ~/.kube
+        path: "/home/{{ home_owner }}/.kube"
       register: dir
+      become: false
+      vars:
+        ansible_connection: local
+        ansible_become: false
 
     - name: Create ~/.kubec if not exist on localhost
       delegate_to: localhost
       ansible.builtin.file:
         state: directory
-        path: ~/.kube 
+        path: "/home/{{ home_owner }}/.kube"
         mode: '0755'
+      vars:
+        ansible_connection: local
+        ansible_become: false 
 
     - name: Copy kube config to localhost
-      when: inventory_hostname in groups['control_plane_prx']
+      when: inventory_hostname in groups['control_plane']
       ansible.builtin.fetch:     
         src: "{{ kubernetes_folder }}/admin.conf"
-        dest: /home/{{ home_owner }}/.kube/admin.conf
+        dest: "/home/{{ home_owner }}/.kube/admin_{{ inventory_hostname }}.conf"
         owner: "{{ home_owner }}"
         mode: '0644'
         flat: true
 
     - name: Deploy calico CNI plugin 
-      when: inventory_hostname in groups['control_plane_prx']
+      when: inventory_hostname in groups['control_plane']
       ansible.builtin.shell: sudo -u {{ ansible_user }} kubectl apply -f {{ calico_url }} 
       register: calico_output
       become: true
@@ -92,7 +99,7 @@
         var: calico_output   
 
     - name: Copy join command to worker nodes
-      when: inventory_hostname in groups['workers_prx']
+      when: inventory_hostname in groups['workers']
       ansible.builtin.copy:
         src: /tmp/join_cluster
         dest: "{{ ansible_home }}/.kube/join_cluster"
@@ -100,7 +107,7 @@
         mode: "0744"
 
     - name: Join worker nodes to cluster
-      when: inventory_hostname in groups['workers_prx']
+      when: inventory_hostname in groups['workers']
       ansible.builtin.shell: /bin/sh {{ ansible_home }}/.kube/join_cluster
       register: join_output
       become: true
