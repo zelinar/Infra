@@ -91,5 +91,13 @@ resource "proxmox_vm_qemu" "ubuntu"{
   #CIDR notation
   ipconfig0 = "ip=${each.value.ip}/${var.net_cidr},gw=${var.gateway}"
 
+  # issue with hangs out on current VMs - ignore those changes 
+  lifecycle {
+    ignore_changes = [
+      bootdisk,
+      tags,
+    ]
+  }
+
 } 
   
