@@ -1,0 +1,7 @@
+
+---
+# Import correct patching tasks depending on OS family detected by ansible
+
+- name: Importing APT patching tasks
+  ansible.builtin.import_tasks: apt.yml
+  when: ansible_os_family == "Debian"

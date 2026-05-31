@@ -1,0 +1,19 @@
+---
+# tasks file for argocd_prerequisites
+- name: Pre-pull Argocd images on all nodes
+  ansible.builtin.shell: |
+    images=(
+      "quay.io/argoproj/argocd:{{ argocd_version }}"
+      "ghcr.io/dexidp/dex:v2.42.0"
+      "docker.io/library/redis:7-alpine"
+    )
+
+    for image in "${images[@]}"; do
+      echo "Pulling $image..."
+      ctr -n k8s.io images pull "$image"
+    done
+  args:
+    executable: /bin/bash 
+  become: true
+
+ 

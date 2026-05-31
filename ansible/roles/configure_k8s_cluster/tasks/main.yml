@@ -69,7 +69,7 @@
         ansible_connection: local
         ansible_become: false
 
-    - name: Create ~/.kubec if not exist on localhost
+    - name: Create ~/.kube if not exist on localhost
       delegate_to: localhost
       ansible.builtin.file:
         state: directory
@@ -88,6 +88,7 @@
         mode: '0644'
         flat: true
 
+    #remove in favor to switch to tigera operator 
     - name: Deploy calico CNI plugin 
       when: inventory_hostname in groups['control_plane']
       ansible.builtin.shell: sudo -u {{ ansible_user }} kubectl apply -f {{ calico_url }} 
@@ -96,7 +97,96 @@
 
     - name: Print out calico 
       ansible.builtin.debug:
-        var: calico_output   
+        var: calico_output 
+
+    # # === CALICO (TIGERA OPERATOR) ===
+    # - name: Wait for Kubernetes API to be ready
+    #   when: inventory_hostname in groups['control_plane']
+    #   ansible.builtin.shell: kubectl get nodes
+    #   environment:
+    #     KUBECONFIG: /etc/kubernetes/admin.conf
+    #   register: api_ready
+    #   retries: 20
+    #   delay: 5
+    #   until: api_ready.rc == 0
+    #   become: true
+
+    # - name: Install Calico CRDs (Tigera Operator prerequisite)
+    #   when: inventory_hostname in groups['control_plane']
+    #   ansible.builtin.shell: |
+    #     kubectl apply --server-side --force-conflicts -f {{ calico_crds }}
+    #   environment:
+    #     KUBECONFIG: /etc/kubernetes/admin.conf  
+    #   become: true
+
+    # # - name: Wait for Calico CRDs to register
+    # #   when: inventory_hostname in groups['control_plane']
+    # #   ansible.builtin.shell: |
+    # #     kubectl get crd installations.operator.tigera.io
+    # #   environment:
+    # #     KUBECONFIG: /etc/kubernetes/admin.conf
+    # #   register: crd_check
+    # #   retries: 30
+    # #   delay: 5
+    # #   until: crd_check.rc == 0
+    # #   become: true 
+
+    # - name: Wait for Calico CRDs to register
+    #   when: inventory_hostname in groups['control_plane']
+    #   ansible.builtin.shell: |
+    #     kubectl wait --for=condition=Established crd/installations.operator.tigera.io --timeout=120s
+    #   environment:
+    #     KUBECONFIG: /etc/kubernetes/admin.conf  
+    #   become: true   
+
+    # - name: Install Tigera Operator
+    #   when: inventory_hostname in groups['control_plane']
+    #   ansible.builtin.shell: |
+    #     kubectl apply -f {{ calico_operator }}
+    #   environment:
+    #     KUBECONFIG: /etc/kubernetes/admin.conf 
+    #   become: true  
+
+    # - name: Wait for Tigera Operator
+    #   when: inventory_hostname in groups['control_plane']
+    #   ansible.builtin.shell: |
+    #     kubectl wait --for=condition=Available deployment -l k8s-app=tigera-operator -n tigera-operator --timeout=300s
+    #   environment:
+    #     KUBECONFIG: /etc/kubernetes/admin.conf   
+    #   become: true  
+
+    # - name: Apply Calico installation manifest (Tigera Installation CR)
+    #   when: inventory_hostname in groups['control_plane']
+    #   ansible.builtin.copy:
+    #     dest: /tmp/calico-installation.yaml
+    #     content: |
+    #       apiVersion: operator.tigera.io/v1
+    #       kind: Installation
+    #       metadata:
+    #         name: default
+    #       spec:
+    #         calicoNetwork:
+    #           ipPools:
+    #           - cidr: {{ pod_cidr }}
+    #             encapsulation: VXLAN
+    #             natOutgoing: Enabled
+    #             nodeSelector: all()
+    #   become: true  
+
+    # - name: Apply Calico Installation CR
+    #   when: inventory_hostname in groups['control_plane']
+    #   ansible.builtin.shell: kubectl apply -f /tmp/calico-installation.yaml
+    #   environment:
+    #     KUBECONFIG: /etc/kubernetes/admin.conf
+    #   become: true 
+
+    # - name: Wait for Calico to be ready
+    #   when: inventory_hostname in groups['control_plane']
+    #   ansible.builtin.shell: |
+    #     kubectl rollout status ds/calico-node -n calico-system --timeout=600s
+    #   environment:
+    #     KUBECONFIG: /etc/kubernetes/admin.conf  
+    #   become: true
 
     - name: Copy join command to worker nodes
       when: inventory_hostname in groups['workers']

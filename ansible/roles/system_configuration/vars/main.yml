@@ -2,4 +2,4 @@
 ---
 # vars file for system_configuration
 modules_conf: /etc/modules-load.d/containerd.conf
-network_conf: /etc/sysctl.d/99.k8s.conf
+network_conf: /etc/sysctl.d/99-disable-ipv6.conf

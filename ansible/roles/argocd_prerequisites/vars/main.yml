@@ -1,0 +1,3 @@
+---
+# vars file for argocd_prerequisites
+ argocd_version: v3.3.6

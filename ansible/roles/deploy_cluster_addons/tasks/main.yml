@@ -1,132 +1,275 @@
 ---
 # tasks file for deploy_cluster_addons
 #####################################
-#####METALLB#####
+#####ARGOCD#####
 #####################################
-- name: Deploy MetalLB from localhost
+- name: Deploy ArgoCD from localhost
   delegate_to: localhost
   run_once: true
   vars:
     ansible_become: false
   kubernetes.core.helm:
-    name: metallb
-    chart_ref: "{{ metallb_chart }}"
-    release_namespace: "{{ metallb_namespace }}"
+    name: argocd
+    chart_ref: "{{ argocd_chart }}"
+    release_namespace: "{{ argocd_namespace }}"
     create_namespace: true
     kubeconfig: "{{ kubeconfig_path }}"
     values_files: 
-      - "{{ metallb_values }}"
+      - "{{ argocd_values }}"
     state: present
-  
-- name: Wait for MetalLB pods to be running
+
+- name: Wait for ArgoCD pods to be running
   delegate_to: localhost
   run_once: true
   vars:
     ansible_become: false
   kubernetes.core.k8s_info:
     kind: Pod
-    namespace: "{{ metallb_namespace }}"
+    namespace: "{{ argocd_namespace }}"
     kubeconfig: "{{ kubeconfig_path }}"
-  register: metallb_pods
+  register: argocd_pods
   retries: 10
   delay: 10
   until: >
-    metallb_pods is defined and
-    metallb_pods.resources is defined and
+    argocd_pods is defined and
+    argocd_pods.resources is defined and
     (
-      metallb_pods.resources
+      argocd_pods.resources
       | selectattr('status.phase', 'equalto', 'Running')
       | list | length
-    ) > 0
+    ) > 0   
 
-- debug:
-    var: metallb_pods
-
-- name: Deploy MetalLB IP pool
+- name: Deploy argo app of apps
   delegate_to: localhost
   run_once: true
   vars:
     ansible_become: false
   kubernetes.core.helm:
-    name: metallb-ip-pool
-    chart_ref: "{{ metallb_ippool_chart }}"
-    release_namespace: "{{ metallb_namespace }}"
+    name: core-services-root
+    chart_ref: "{{ argo_root_app_chart }}"
+    release_namespace: "{{ argocd_namespace }}"
     kubeconfig: "{{ kubeconfig_path }}"
     values_files:
-      - "{{ metallb_ippool_values }}"
+      - "{{ argo_root_app_values }}"
     state: present
 
-- name: Verify IP pool exists
+# Replace default auto-generated admin password for cusom one specified in group_vars/all.yaml
+
+# community.general.htpasswd dowsnt output needed hash, switch to command module
+# - name: Generate bcrypt hash for ArgoCD admin password
+#   community.general.htpasswd:
+#     path: /dev/null
+#     name: ""
+#     password: "{{ argocd_admin_password }}"
+#     crypt_scheme: bcrypt
+#   register: htpasswd_output
+#   changed_when: false
+#   delegate_to: localhost
+#   run_once: true
+#   #no_log: true
+#   vars:
+#     ansible_become: false
+  
+
+- name: Generate bcrypt hash for ArgoCD admin password
   delegate_to: localhost
-  run_once: true
+  ansible.builtin.command: >
+    htpasswd -nbBC 10 '' {{ argocd_admin_password }}
+  register: htpasswd_output
+  changed_when: false
   vars:
     ansible_become: false
+  run_once: true  
+
+
+- debug:
+    var: htpasswd_output
+
+- name: Extract bcrypt hash
+  ansible.builtin.set_fact:
+    argocd_admin_password_hash: "{{ htpasswd_output.stdout.split(':', 1)[1] }}" 
+  run_once: true  
+
+- name: Wait for argocd-secret to exist
   kubernetes.core.k8s_info:
-    api_version: metallb.io/v1beta1
-    kind: IPAddressPool
-    namespace: "{{ metallb_namespace }}"
     kubeconfig: "{{ kubeconfig_path }}"
-  register: ippools
-
-- ansible.builtin.debug:
-    var: ippools.resources   
-
-
-#####################################
-#####TRAEFIK LOADBALACER#####
-##################################### 
-- name: Deploy Traefik from localhost
-  delegate_to: localhost
+    kind: Secret
+    name: argocd-secret
+    namespace: argocd
+  delegate_to: localhost  
+  register: argocd_secret_check
+  retries: 100
+  delay: 5
+  until: argocd_secret_check.resources | length > 0
   run_once: true
   vars:
     ansible_become: false
-  kubernetes.core.helm:
-    name: traefik-lb
-    chart_ref: "{{ traefik_chart }}"
-    release_namespace: "{{ traefik_namespace }}"
-    create_namespace: true
+
+- name: Update ArgoCD admin password
+  kubernetes.core.k8s:
     kubeconfig: "{{ kubeconfig_path }}"
-    values_files: 
-      - "{{ traefik_values }}"
     state: present
+    merge_type: merge
+    definition:
+      apiVersion: v1
+      kind: Secret
+      metadata:
+        name: argocd-secret
+        namespace: argocd
+      stringData:
+        admin.password: "{{ argocd_admin_password_hash }}"
+        admin.passwordMtime: "{{ ansible_date_time.iso8601 }}" 
+  delegate_to: localhost 
+  run_once: true
+  vars:
+    ansible_become: false    
 
-- name: Wait for Traefik pods to be running
+- name: Restart ArgoCD server
+  kubernetes.core.k8s:
+    kubeconfig: "{{ kubeconfig_path }}"
+    state: patched
+    kind: Deployment
+    name: argocd-server
+    namespace: argocd
+    definition:
+      spec:
+        template:
+          metadata:
+            annotations:
+              kubectl.kubernetes.io/restartedAt: "{{ ansible_date_time.iso8601 }}"
   delegate_to: localhost
   run_once: true
   vars:
-    ansible_become: false
-  kubernetes.core.k8s_info:
-    kind: Pod
-    namespace: "{{ traefik_namespace }}"
-    kubeconfig: "{{ kubeconfig_path }}"
-  register: traefik_pods
-  retries: 10
-  delay: 10
-  until: >
-    traefik_pods is defined and
-    traefik_pods.resources is defined and
-    (
-      traefik_pods.resources
-      | selectattr('status.phase', 'equalto', 'Running')
-      | list | length
-    ) > 0    
+    ansible_become: false                  
 
 
-#####################################
-#####LONGHORN#####
-##################################### 
-- name: Deploy Longhorn from localhost
-  delegate_to: localhost
-  run_once: true
-  vars:
-    ansible_become: false
-  kubernetes.core.helm:
-    name: longhorn
-    chart_ref: "{{ longhorn_chart }}"
-    release_namespace: "{{ longhorn_namespace }}"
-    create_namespace: true
-    kubeconfig: "{{ kubeconfig_path }}"
-    values_files: 
-      - "{{ longhorn_values }}"
-    state: present
+# #####################################
+# #####METALLB#####
+# #####################################
+# - name: Deploy MetalLB from localhost
+#   delegate_to: localhost
+#   run_once: true
+#   vars:
+#     ansible_become: false
+#   kubernetes.core.helm:
+#     name: metallb
+#     chart_ref: "{{ metallb_chart }}"
+#     release_namespace: "{{ metallb_namespace }}"
+#     create_namespace: true
+#     kubeconfig: "{{ kubeconfig_path }}"
+#     values_files: 
+#       - "{{ metallb_values }}"
+#     state: present
+  
+# - name: Wait for MetalLB pods to be running
+#   delegate_to: localhost
+#   run_once: true
+#   vars:
+#     ansible_become: false
+#   kubernetes.core.k8s_info:
+#     kind: Pod
+#     namespace: "{{ metallb_namespace }}"
+#     kubeconfig: "{{ kubeconfig_path }}"
+#   register: metallb_pods
+#   retries: 10
+#   delay: 10
+#   until: >
+#     metallb_pods is defined and
+#     metallb_pods.resources is defined and
+#     (
+#       metallb_pods.resources
+#       | selectattr('status.phase', 'equalto', 'Running')
+#       | list | length
+#     ) > 0
+
+# - debug:
+#     var: metallb_pods
+
+# - name: Deploy MetalLB IP pool
+#   delegate_to: localhost
+#   run_once: true
+#   vars:
+#     ansible_become: false
+#   kubernetes.core.helm:
+#     name: metallb-ip-pool
+#     chart_ref: "{{ metallb_ippool_chart }}"
+#     release_namespace: "{{ metallb_namespace }}"
+#     kubeconfig: "{{ kubeconfig_path }}"
+#     values_files:
+#       - "{{ metallb_ippool_values }}"
+#     state: present
+
+# - name: Verify IP pool exists
+#   delegate_to: localhost
+#   run_once: true
+#   vars:
+#     ansible_become: false
+#   kubernetes.core.k8s_info:
+#     api_version: metallb.io/v1beta1
+#     kind: IPAddressPool
+#     namespace: "{{ metallb_namespace }}"
+#     kubeconfig: "{{ kubeconfig_path }}"
+#   register: ippools
+
+# - ansible.builtin.debug:
+#     var: ippools.resources   
+
+
+# #####################################
+# #####TRAEFIK LOADBALACER#####
+# ##################################### 
+# - name: Deploy Traefik from localhost
+#   delegate_to: localhost
+#   run_once: true
+#   vars:
+#     ansible_become: false
+#   kubernetes.core.helm:
+#     name: traefik-lb
+#     chart_ref: "{{ traefik_chart }}"
+#     release_namespace: "{{ traefik_namespace }}"
+#     create_namespace: true
+#     kubeconfig: "{{ kubeconfig_path }}"
+#     values_files: 
+#       - "{{ traefik_values }}"
+#     state: present
+
+# - name: Wait for Traefik pods to be running
+#   delegate_to: localhost
+#   run_once: true
+#   vars:
+#     ansible_become: false
+#   kubernetes.core.k8s_info:
+#     kind: Pod
+#     namespace: "{{ traefik_namespace }}"
+#     kubeconfig: "{{ kubeconfig_path }}"
+#   register: traefik_pods
+#   retries: 10
+#   delay: 10
+#   until: >
+#     traefik_pods is defined and
+#     traefik_pods.resources is defined and
+#     (
+#       traefik_pods.resources
+#       | selectattr('status.phase', 'equalto', 'Running')
+#       | list | length
+#     ) > 0    
+
+
+# #####################################
+# #####LONGHORN#####
+# ##################################### 
+# - name: Deploy Longhorn from localhost
+#   delegate_to: localhost
+#   run_once: true
+#   vars:
+#     ansible_become: false
+#   kubernetes.core.helm:
+#     name: longhorn
+#     chart_ref: "{{ longhorn_chart }}"
+#     release_namespace: "{{ longhorn_namespace }}"
+#     create_namespace: true
+#     kubeconfig: "{{ kubeconfig_path }}"
+#     values_files: 
+#       - "{{ longhorn_values }}"
+#     state: present
 

@@ -5,6 +5,8 @@ home_owner: martin
 ansible_home: /home/ansible
 vagrant_home: /home/vagrant
 kubernetes_folder: /etc/kubernetes
-calico_url: https://raw.githubusercontent.com/projectcalico/calico/v3.29.2/manifests/calico.yaml
+calico_url: https://raw.githubusercontent.com/projectcalico/calico/v3.32.0/manifests/calico.yaml
+calico_crds: https://raw.githubusercontent.com/projectcalico/calico/v3.32.0/manifests/operator-crds.yaml
+calico_operator: https://raw.githubusercontent.com/projectcalico/calico/v3.32.0/manifests/tigera-operator.yaml
 pod_cidr: 190.160.0.0/16
 k8s_version: 1.33.3

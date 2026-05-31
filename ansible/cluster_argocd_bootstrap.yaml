@@ -1,0 +1,11 @@
+- name: Deploy ArgoCD to the cluster
+  hosts: control_plane_dev, workers_dev
+  gather_facts: true
+  roles:
+    - name: ArgoCD prerequisites
+      role: argocd_prerequisites
+
+    - name: Deply Argocd to cluster
+      role: deploy_cluster_addons
+      tags: [addons]
+     

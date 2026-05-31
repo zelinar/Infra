@@ -1,9 +1,13 @@
 - name: Install and configure the kubernetes cluster on linux nodes
-  hosts: control_plane_prx_02, workers_prx_02
+  hosts: control_plane_management, workers_management
   gather_facts: true
   roles:
-    - name: Install prerequisites
+    - name: Install prerequisites_and_disable_automatic_updates
       role: install_prerequisites 
+
+    - name: Upgrade OS
+      role: install_updates
+      tags: [osupdate]   
 
     # - name: Install checkm sw version
     #   role: check_sw_versions
@@ -27,7 +31,9 @@
     - name: Initialize k8s cluster
       role: configure_k8s_cluster   
 
-    - name: Deply clsuter addons
-      role: deploy_cluster_addons
-      tags: [addons]  
-      
+     
+
+     
+
+#sometimes some VM has locked apt
+#when more then 1 control plane, the final cluster has only 1 control plane because another is not joined 

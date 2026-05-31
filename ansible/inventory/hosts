@@ -2,38 +2,70 @@
 [proxmox_hosts]
 homelab-server ansible_host=10.10.20.20 ansible_ssh_port=22 ansible_user=root
 
-#VM infrastructure proxmomx
 
+###########################################################
+#K8S VM infrastructure proxmomx
+###########################################################
 #K8S control planes
 [control_plane:children]
-control_plane_prx
-control_plane_prx_02
+control_plane_management
+control_plane_dev
+control_plane_prod
+control_plane_monitoring
 
-[control_plane_prx]
-k8s-control-plane ansible_host=10.10.20.110 
+[control_plane_management]
+k8s-management-control-plane ansible_host=10.10.20.110
 
-[control_plane_prx_02]
-k8s-02-control-plane ansible_host=10.10.20.10 
+[control_plane_dev]
+k8s-workload-dev-control-plane ansible_host=10.10.20.120 
+
+[control_plane_prod]
+k8s-workload-prod-control-plane ansible_host=10.10.20.130 
+
+[control_plane_monitoring]
+k8s-monitoring-control-plane ansible_host=10.10.20.140
+
+
+
 
 #K8S worker nodes
 [workers:children]
-workers_prx
-workers_prx_02
+workers_management
+workers_dev
+workers_prod
+workers_monitoring
 
-[workers_prx]
-k8s-worker-node01 ansible_host=10.10.20.112 
-k8s-worker-node02 ansible_host=10.10.20.113 
+[workers_management]
+k8s-management-worker-node01 ansible_host=10.10.20.111
+k8s-management-worker-node02 ansible_host=10.10.20.112
+k8s-management-worker-node03 ansible_host=10.10.20.113
 
-[workers_prx_02]
-k8s-02-worker-node01 ansible_host=10.10.20.11 
-k8s-02-worker-node02 ansible_host=10.10.20.12
-k8s-03-worker-node03 ansible_host=10.10.20.13
+[workers_dev]
+k8s-workload-dev-worker-node01 ansible_host=10.10.20.121 
+k8s-workload-dev-worker-node02 ansible_host=10.10.20.122
+k8s-workload-dev-worker-node03 ansible_host=10.10.20.123
+
+[workers_prod]
+k8s-workload-prod-worker-node01 ansible_host=10.10.20.131
+k8s-workload-prod-worker-node02 ansible_host=10.10.20.132
+k8s-workload-prod-worker-node03 ansible_host=10.10.20.133
+
+[workers_prx_03]
+k8s-monitoring-worker-node01 ansible_host=10.10.20.141
+k8s-monitoring-worker-node02 ansible_host=10.10.20.142
+k8s-monitoring-worker-node03 ansible_host=10.10.20.143
 
 
+
+
+###########################################################
 #VM infrastructure vbox
+###########################################################
+#K8S control plane
 [control_plane]
 control-plane ansible_host=192.168.1.142 ansible_ssh_port=22  ansible_ssh_user=vagrant ansible_ssh_private_key_file=~/.vagrant.d/insecure_private_key
 
+#K8S worker nodes
 [workers]
 worker1 ansible_host=192.168.1.144 ansible_user=vagrant ansible_ssh_private_key_file=~/.vagrant.d/insecure_private_key
 worker2 ansible_host=192.168.1.143 ansible_user=vagrant ansible_ssh_private_key_file=~/.vagrant.d/insecure_private_key

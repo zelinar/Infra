@@ -1,0 +1,54 @@
+---
+
+- name: Install all latest apt packages
+  ansible.builtin.apt:
+    name: "*"
+    state: latest
+    update_cache: true
+    autoclean: true
+  register: apt_result
+
+- name: Ensure log path exists
+  ansible.builtin.file:
+    path: "{{ linux_log_folder }}"
+    state: directory
+    mode: '0755'
+
+- name: Log apt results to file for auditing
+  ansible.builtin.copy:
+    content: "{{ apt_result.stdout }}"
+    dest: "{{ linux_log_path }}"
+    mode: '0755'
+
+- name: Output apt update succeeded message
+  ansible.builtin.debug:
+    msg: "HOSTNAME: {{ inventory_hostname }} | apt updates installed"
+  when: apt_result is defined and apt_result is succeeded and apt_result.changed
+
+- name: Output apt update failed message
+  ansible.builtin.debug:
+    msg: "HOSTNAME: {{ inventory_hostname }} | apt update has FAILED"
+  when: apt_result is defined and apt_result is failed
+
+- name: Output no update message
+  ansible.builtin.debug:
+    msg: "HOSTNAME: {{ inventory_hostname }} | No updates"
+  when: apt_result is defined and apt_result is succeeded and not apt_result.changed
+
+- name: Check if reboot is required
+  ansible.builtin.stat:
+    path: /var/run/reboot-required
+    get_checksum: false
+  register: reboot_required
+
+- name: Reboot and notify
+  when: reboot_required.stat.exists
+  block:
+
+    - name: Notify reboot
+      ansible.builtin.debug:
+        msg: "Rebooting {{ inventory_hostname }}: /var/run/Reboot-required exists"
+
+    - name: Reboot if reboot-required file is present
+      ansible.builtin.reboot:
+        msg: "Reboot initiated by Ansible after updates were applied"

@@ -1,5 +1,9 @@
+#ansible
 ansible_user: ansible
 ansible_password: Ansible-23!
 ansible_become_password: Ansible-23! 
 ansible_become: true  
 become_method: sudo 
+
+#argocd
+argocd_admin_password: "argo"

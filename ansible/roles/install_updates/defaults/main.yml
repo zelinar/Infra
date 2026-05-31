@@ -1,0 +1,6 @@
+---
+# defaults file for install_updates
+# Default Linux variables
+# Log file of update tasks on targeted hosts
+linux_log_path: "/tmp/ansible/ansible_update.txt"
+linux_log_folder: "/tmp/ansible/"

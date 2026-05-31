@@ -1,17 +1,49 @@
 ---
 # tasks file for install_prerequisites
+- name: Disable unatended-upgrades
+  ansible.builtin.systemd:
+    name: unattended-upgrades
+    state: stopped
+    enabled: false
+  become: true
+
+- name: Disable apt periodic timers
+  ansible.builtin.systemd:
+    name: "{{ item }}"
+    enabled: false
+    state: stopped
+  loop:
+    - apt-daily.timer
+    - apt-daily-upgrade.timer
+  become: true 
+
+- name: Wait for apt/dpkg lock release
+  ansible.builtin.shell: |
+    while fuser /var/lib/dpkg/lock-frontend >/dev/null 2>&1; do
+      echo "Waiting for dpkg lock..."
+      sleep 5
+    done
+  changed_when: false
+  become: true  
+
+- name: Reboot and notify
+  become: true
+  block:
+    - name: Notify reboot
+      ansible.builtin.debug:
+        msg: "Rebooting {{ inventory_hostname }}"
+
+    - name: Reboot machines
+      ansible.builtin.reboot:
+        msg: "Reboot initiated by Ansible after updates were applied"  
+
 - name: Install packages
   ansible.builtin.package:
     name:
       - curl
   become: true  
 
-# - name: Update all packages
-#   ansible.builtin.apt:
-#     name: "*"
-#     state: latest
-#     update_cache: true
-#   become: true  
+
 
 
 

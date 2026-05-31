@@ -40,13 +40,32 @@
     - name: Apply new network conf
       ansible.builtin.shell: sudo sysctl --system    
     
-    # - name: Persist sysctl settings for Kubernetes networking
+    # - name: Disable IPv6
     #   ansible.builtin.copy:
     #     dest: "{{ network_conf }}"
     #     content: |
-    #       net.bridge.bridge-nf-call-ip6tables = 1
-    #       net.bridge.bridge-nf-call-iptables = 1
-    #       net.ipv4.ip_forward = 1
-    #     mode: '0644'
+    #       net.ipv6.conf.all.disable_ipv6 = 1
+    #       net.ipv6.conf.default.disable_ipv6 = 1
+    #       net.ipv6.conf.lo.disable_ipv6 = 1
+    #     owner: root
+    #     group: root
+    #     mode: "0644"
+
+    # - name: Apply sysctl settings
+    #   ansible.builtin.command: sysctl --system
+    #   become: true
+    #   changed_when: false
+
+    # - name: Verify IPv6 is disabled
+    #   ansible.builtin.command: cat /proc/sys/net/ipv6/conf/all/disable_ipv6
+    #   register: ipv6_status
+    #   changed_when: false
+
+    # - name: Show IPv6 status
+    #   ansible.builtin.debug:
+    #     var: ipv6_status.stdout   
+          
       
   become: true          
+
+     
