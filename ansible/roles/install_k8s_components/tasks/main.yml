@@ -9,8 +9,7 @@
 
     - name: Add k8s repository GPG key
       ansible.builtin.shell: curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.31/deb/Release.key |  gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
-      #curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add -
-
+      
     - name: Remove k8s apt repo if it's presented
       ansible.builtin.file:
         path: /etc/apt/sources.list.d/kubernetes.list
@@ -31,6 +30,7 @@
         state: present
         update_cache: true
 
+    #TODO fix those tasks for package hold
     # - name: Hold kubelet, kubeadm, kubectl
     #   ansible.builtin.command: apt-mark hold kubelet kubeadm kubectl
     #   args:
