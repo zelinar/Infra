@@ -1,13 +1,5 @@
 # 🛠️ Ansible Automation for Homelab Management
 
-![GitHub repo size](https://img.shields.io/github/repo-size/zelinar/Infra)
-![GitHub contributors](https://img.shields.io/github/contributors/zelinar/Infra)
-![GitHub stars](https://img.shields.io/github/stars/zelinar/Infra?style=social)
-![GitHub forks](https://img.shields.io/github/forks/zelinar/Infra?style=social)
-![GitHub issues](https://img.shields.io/github/issues/zelinar/Infra)
-![GitHub license](https://img.shields.io/github/license/zelinar/Infra)
-
----
 
 ## 📖 Overview
 
