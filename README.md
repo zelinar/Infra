@@ -5,7 +5,7 @@
 ![GitHub pull requests](https://img.shields.io/github/issues-pr/zelinar/Infra)
 ![GitHub license](https://img.shields.io/github/license/zelinar/Infra)
 
-This repository contains multiple subprojects for managing infrastructure and automation. Below is an overview of the subprojects and their purposes.
+This repository contains multiple subprojects for managing infrastructure and automation. It's goal is only edjucational - learning terraform VM provisioning, creating k8s clusters via ansible, and k8s cluster bootstraping via ArgoCD. Below is an overview of the subprojects and their purposes.
 
 ## Subprojects
 
