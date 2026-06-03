@@ -1,6 +1,0 @@
-#SPDX-License-Identifier: MIT-0
----
-# vars file for install_docker
-docker_keys: https://download.docker.com/linux/ubuntu/gpg
-docker_keyring: /etc/apt/keyrings/docker.asc
-ubuntu_repository: deb [arch=amd64 signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu focal stable

@@ -1,38 +1,78 @@
-Role Name
-=========
+# Role: system_configuration
 
-A brief description of the role goes here.
+## 📖 Overview
+This role configures essential system settings on Kubernetes nodes to ensure compatibility with Kubernetes and optimal performance. It includes tasks such as disabling swap, setting kernel parameters, and configuring network settings.
 
-Requirements
-------------
+---
 
-Any pre-requisites that may not be covered by Ansible itself or the role should be mentioned here. For instance, if the role uses the EC2 module, it may be a good idea to mention in this section that the boto package is required.
+## ⚙️ Requirements
+- **Supported OS**: Linux-based systems (Ubuntu, Debian)
+- **Dependencies**: None
+- **Ansible Version**: 2.9+
 
-Role Variables
---------------
+---
 
-A description of the settable variables for this role should go here, including any variables that are in defaults/main.yml, vars/main.yml, and any variables that can/should be set via parameters to the role. Any variables that are read from other roles and/or the global scope (ie. hostvars, group vars, etc.) should be mentioned here as well.
+## 🧩 Role Variables
+The following variables are used in this role. Customize them as needed in your playbook or inventory files.
 
-Dependencies
-------------
+| Variable Name      | Default Value                              | Description                                      |
+|--------------------|--------------------------------------------|------------------------------------------------|
+| `modules_conf`     | `/etc/modules-load.d/containerd.conf`      | Path to the kernel modules configuration file. |
+| `network_conf`     | `/etc/sysctl.d/99-disable-ipv6.conf`       | Path to the network configuration file.        |
 
-A list of other roles hosted on Galaxy should go here, plus any details in regards to parameters that may need to be set for other roles, or variables that are used from other roles.
+---
 
-Example Playbook
-----------------
+## 🚀 Usage
+Here’s an example of how to use this role in your playbook:
 
-Including an example of how to use your role (for instance, with variables passed in as parameters) is always nice for users too:
+```yaml
+- name: Configure system settings for Kubernetes
+  hosts: all
+  roles:
+    - role: system_configuration
+      vars:
+        modules_conf: /etc/modules-load.d/custom-containerd.conf
+        network_conf: /etc/sysctl.d/custom-network.conf
+```
 
-    - hosts: servers
-      roles:
-         - { role: username.rolename, x: 42 }
+---
 
-License
--------
+## 🛠️ Example Playbook
+```yaml
+- name: Apply system configuration
+  hosts: all
+  gather_facts: true
+  roles:
+    - role: system_configuration
+```
 
-BSD
+---
 
-Author Information
-------------------
+## 🔗 Dependencies
+This role has no external dependencies.
 
-An optional section for the role authors to include contact information, or a website (HTML is not allowed).
+---
+
+## 📝 Tasks Overview
+1. **Set Timezone**:
+   - Configures the system timezone (e.g., `Europe/Prague`).
+2. **Disable Swap**:
+   - Disables swap temporarily and permanently by modifying `/etc/fstab`.
+3. **Load Kernel Modules**:
+   - Loads required kernel modules (`br_netfilter`, `overlay`) and ensures they are loaded on boot.
+4. **Configure Network Settings**:
+   - Applies network settings such as enabling IPv4 forwarding and disabling IPv6.
+5. **Apply Kernel Parameters**:
+   - Applies the configured kernel parameters using `sysctl`.
+
+---
+
+## 📜 License
+This role is licensed under the **MIT License**. See the [LICENSE](../../LICENSE) file for details.
+
+---
+
+## 🤝 Author Information
+- **Author**: Your Name
+- **GitHub**: [zelinar](https://github.com/zelinar)
+```

@@ -1,38 +1,71 @@
-Role Name
-=========
+# Role: set_hostname
 
-A brief description of the role goes here.
+## 📖 Overview
+This role sets the hostname of the target nodes to match their inventory name. It ensures that the hostname is updated both in the system configuration and in the `/etc/hostname` file.
 
-Requirements
-------------
+---
 
-Any pre-requisites that may not be covered by Ansible itself or the role should be mentioned here. For instance, if the role uses the EC2 module, it may be a good idea to mention in this section that the boto package is required.
+## ⚙️ Requirements
+- **Supported OS**: Linux-based systems
+- **Dependencies**: None
+- **Ansible Version**: 2.9+
 
-Role Variables
---------------
+---
 
-A description of the settable variables for this role should go here, including any variables that are in defaults/main.yml, vars/main.yml, and any variables that can/should be set via parameters to the role. Any variables that are read from other roles and/or the global scope (ie. hostvars, group vars, etc.) should be mentioned here as well.
+## 🧩 Role Variables
+The following variables are used in this role. Customize them as needed in your playbook or inventory files.
 
-Dependencies
-------------
+| Variable Name      | Default Value      | Description                          |
+|--------------------|--------------------|--------------------------------------|
+| `hostname_path`    | `/etc/hostname`    | Path to the hostname configuration file. |
 
-A list of other roles hosted on Galaxy should go here, plus any details in regards to parameters that may need to be set for other roles, or variables that are used from other roles.
+---
 
-Example Playbook
-----------------
+## 🚀 Usage
+Here’s an example of how to use this role in your playbook:
 
-Including an example of how to use your role (for instance, with variables passed in as parameters) is always nice for users too:
+```yaml
+- name: Set hostnames for all nodes
+  hosts: all
+  roles:
+    - role: set_hostname
+      vars:
+        hostname_path: /etc/hostname
+```
 
-    - hosts: servers
-      roles:
-         - { role: username.rolename, x: 42 }
+---
 
-License
--------
+## 🛠️ Example Playbook
+```yaml
+- name: Configure hostnames
+  hosts: all
+  gather_facts: true
+  roles:
+    - role: set_hostname
+```
 
-BSD
+---
 
-Author Information
-------------------
+## 🔗 Dependencies
+This role has no external dependencies.
 
-An optional section for the role authors to include contact information, or a website (HTML is not allowed).
+---
+
+## 📝 Tasks Overview
+1. **Set Hostname**:
+   - Updates the system hostname to match the `inventory_hostname`.
+2. **Update `/etc/hostname`**:
+   - Ensures the hostname is written to the `/etc/hostname` file.
+
+---
+
+## 📜 License
+This role is licensed under the **MIT License**. See the [LICENSE](../../LICENSE) file for details.
+
+---
+
+## 🤝 Author Information
+- **Author**: Your Name
+- **GitHub**: [zelinar](https://github.com/zelinar)
+```
+
