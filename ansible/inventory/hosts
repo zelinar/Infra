@@ -26,8 +26,6 @@ k8s-workload-prod-control-plane ansible_host=10.10.20.130
 k8s-monitoring-control-plane ansible_host=10.10.20.140
 
 
-
-
 #K8S worker nodes
 [workers:children]
 workers_management
@@ -54,8 +52,6 @@ k8s-workload-prod-worker-node03 ansible_host=10.10.20.133
 k8s-monitoring-worker-node01 ansible_host=10.10.20.141
 k8s-monitoring-worker-node02 ansible_host=10.10.20.142
 k8s-monitoring-worker-node03 ansible_host=10.10.20.143
-
-
 
 
 ###########################################################

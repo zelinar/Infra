@@ -10,9 +10,6 @@
       role: install_updates
       tags: [osupdate]   
 
-    # - name: Install checkm sw version
-    #   role: check_sw_versions
-
     - name: Set hostnames
       role: set_hostname
       tags: [set_hostname]
