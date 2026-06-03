@@ -1,38 +1,34 @@
-Role Name
-=========
+# Role: argocd_prerequisites
 
-A brief description of the role goes here.
+## 📖 Overview
+This role prepares the Kubernetes nodes for deploying **ArgoCD** by pre-pulling necessary container images. It ensures that the required images are available on all nodes to optimize the deployment process and reduce startup time.
 
-Requirements
-------------
+---
 
-Any pre-requisites that may not be covered by Ansible itself or the role should be mentioned here. For instance, if the role uses the EC2 module, it may be a good idea to mention in this section that the boto package is required.
+## ⚙️ Requirements
+- **Supported OS**: Linux-based systems with Kubernetes installed.
+- **Dependencies**:
+  - Kubernetes cluster must be initialized and accessible.
+  - `ctr` (Containerd CLI) must be installed and configured on all nodes.
 
-Role Variables
---------------
+---
 
-A description of the settable variables for this role should go here, including any variables that are in defaults/main.yml, vars/main.yml, and any variables that can/should be set via parameters to the role. Any variables that are read from other roles and/or the global scope (ie. hostvars, group vars, etc.) should be mentioned here as well.
+## 🧩 Role Variables
+The following variables are used in this role. Customize them as needed in your playbook or inventory files.
 
-Dependencies
-------------
+| Variable Name      | Default Value | Description                          |
+|--------------------|---------------|--------------------------------------|
+| `argocd_version`   | `v3.3.6`      | The version of ArgoCD to pre-pull.   |
 
-A list of other roles hosted on Galaxy should go here, plus any details in regards to parameters that may need to be set for other roles, or variables that are used from other roles.
+---
 
-Example Playbook
-----------------
+## 🚀 Usage
+Here’s an example of how to use this role in your playbook:
 
-Including an example of how to use your role (for instance, with variables passed in as parameters) is always nice for users too:
-
-    - hosts: servers
-      roles:
-         - { role: username.rolename, x: 42 }
-
-License
--------
-
-BSD
-
-Author Information
-------------------
-
-An optional section for the role authors to include contact information, or a website (HTML is not allowed).
+```yaml
+- name: Prepare nodes for ArgoCD deployment
+  hosts: all
+  roles:
+    - role: argocd_prerequisites
+      vars:
+        argocd_version: v3.3.6
