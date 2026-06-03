@@ -1,38 +1,108 @@
-Role Name
-=========
+# Role: deploy_cluster_addons
 
-A brief description of the role goes here.
+## 📖 Overview
+This role is responsible for deploying essential Kubernetes cluster addons, including **ArgoCD** and other necessary tools. It ensures that the cluster is equipped with the required addons for managing applications and configurations.
 
-Requirements
-------------
+---
 
-Any pre-requisites that may not be covered by Ansible itself or the role should be mentioned here. For instance, if the role uses the EC2 module, it may be a good idea to mention in this section that the boto package is required.
+## ⚙️ Requirements
+- **Supported OS**: Linux-based systems with Kubernetes installed.
+- **Dependencies**:
+  - Kubernetes cluster must be initialized and accessible.
+  - `kubectl` and `helm` must be installed on the control node.
+- **Ansible Version**: 2.9+
 
-Role Variables
---------------
+---
 
-A description of the settable variables for this role should go here, including any variables that are in defaults/main.yml, vars/main.yml, and any variables that can/should be set via parameters to the role. Any variables that are read from other roles and/or the global scope (ie. hostvars, group vars, etc.) should be mentioned here as well.
+## 🧩 Role Variables
+The following variables are used in this role. Customize them as needed in your playbook or inventory files.
 
-Dependencies
-------------
+| Variable Name              | Default Value                                         | Description                                      |
+|----------------------------|-----------------------------------------------------|------------------------------------------------|
+| `home_owner`               | `martin`                                            | Owner of the home directory for kubeconfig.    |
+| `kubeconfig_path`          | `/home/martin/.kube/admin_k8s-workload-dev-control-plane.conf` | Path to the kubeconfig file.                   |
+| `argocd_values`            | `/home/martin/Documents/INFRA/git/Helm_Charts/argocd/values.yaml` | Path to ArgoCD Helm values file.               |
+| `argocd_chart`             | `/home/martin/Documents/INFRA/git/Helm_Charts/argocd/` | Path to the ArgoCD Helm chart.                 |
+| `argo_root_app_chart`      | `/home/martin/Documents/INFRA/git/Helm_Charts/argocd/core-services-root-app` | Path to the ArgoCD root app chart.             |
+| `argo_root_app_values`     | `/home/martin/Documents/INFRA/git/Helm_Charts/argocd/core-services-root-app/values.yaml` | Path to the ArgoCD root app values file.       |
+| `argocd_namespace`         | `argocd`                                            | Namespace where ArgoCD will be deployed.       |
+| `argocd_admin_password`    | `argo`                                              | Admin password for ArgoCD.                     |
 
-A list of other roles hosted on Galaxy should go here, plus any details in regards to parameters that may need to be set for other roles, or variables that are used from other roles.
+---
 
-Example Playbook
-----------------
+## 🚀 Usage
+Here’s an example of how to use this role in your playbook:
 
-Including an example of how to use your role (for instance, with variables passed in as parameters) is always nice for users too:
+```yaml
+- name: Deploy Kubernetes cluster addons
+  hosts: control_plane, workers
+  roles:
+    - role: deploy_cluster_addons
+      vars:
+        kubeconfig_path: 
 
-    - hosts: servers
-      roles:
-         - { role: username.rolename, x: 42 }
+admin_k8s-workload-dev-control-plane.conf
 
-License
--------
 
-BSD
+        argocd_admin_password: my-secure-password
+```
 
-Author Information
-------------------
+---
 
-An optional section for the role authors to include contact information, or a website (HTML is not allowed).
+## 🛠️ Example Playbook
+```yaml
+- name: Deploy cluster addons
+  hosts: control_plane, workers
+  gather_facts: true
+  roles:
+    - role: deploy_cluster_addons
+      vars:
+        kubeconfig_path: 
+
+admin_k8s-workload-dev-control-plane.conf
+
+
+        argocd_admin_password: my-secure-password
+```
+
+---
+
+## 🔗 Dependencies
+This role has no external dependencies.
+
+---
+
+## 📝 Tasks Overview
+1. **Deploy ArgoCD**:
+   - Uses Helm to deploy ArgoCD to the specified namespace.
+   - Waits for ArgoCD pods to be in a running state.
+2. **Configure ArgoCD Admin Password**:
+   - Generates a bcrypt hash for the admin password.
+   - Updates the ArgoCD secret with the new password.
+   - Restarts the ArgoCD server to apply the changes.
+3. **Deploy ArgoCD Root Application**:
+   - Deploys the ArgoCD root application using Helm.
+
+---
+
+## 📜 License
+This role is licensed under the **MIT License**. See the [LICENSE](../../LICENSE) file for details.
+
+---
+
+## 🤝 Author Information
+- **Author**: Your Name
+- **GitHub**: [Your GitHub Profile](https://github.com/your-profile)
+```
+
+### Explanation:
+1. **Overview**: Describes the purpose of the role.
+2. **Requirements**: Lists prerequisites for using the role.
+3. **Role Variables**: Documents the variables used in the role.
+4. **Usage**: Provides an example of how to include the role in a playbook.
+5. **Example Playbook**: Demonstrates a complete playbook using the role.
+6. **Dependencies**: Notes any external dependencies (none in this case).
+7. **Tasks Overview**: Summarizes the key tasks performed by the role.
+8. **License**: Mentions the license under which the role is distributed.
+9. **Author Information**: Provides a placeholder for the author's details.
+
