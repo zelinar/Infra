@@ -1,4 +1,4 @@
-- name: Laptop backup
+- name: Backup of local Linux system using ansible playbook
   hosts: localhost
   connection: local
   gather_facts: false

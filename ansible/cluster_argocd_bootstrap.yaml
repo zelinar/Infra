@@ -4,8 +4,9 @@
   roles:
     - name: ArgoCD prerequisites
       role: argocd_prerequisites
+      tags: [argocd_prereq]
 
     - name: Deply Argocd to cluster
       role: deploy_cluster_addons
-      tags: [addons]
+      tags: [argocd_addons]
      

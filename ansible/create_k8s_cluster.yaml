@@ -35,5 +35,6 @@
 
      
 
-#sometimes some VM has locked apt
-#when more then 1 control plane, the final cluster has only 1 control plane because another is not joined 
+#TODO
+
+#1) Fix issue when more then 1 control plane is in the cluster, only one control plane is joined 
