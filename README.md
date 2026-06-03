@@ -1,7 +1,7 @@
 # Infra repository Overview
 
 ![GitHub last commit](https://img.shields.io/github/last-commit/zelinar/infra)
-![GitHub issues](https://img.shields.io/github/issues/zelinar/infra)
+![GitHub issues](https://img.shields.io/github/zelinar/infra/issues)
 ![GitHub pull requests](https://img.shields.io/github/issues-pr/zelinar/infra)
 ![GitHub license](https://img.shields.io/github/license/zelinar/infra)
 
