@@ -1,8 +1,11 @@
 - name: Proxmomx configuration 
   hosts: proxmox_hosts
   roles:
-    #- name: Create API user terraform
-    #  role: create_api_user
+    - name: Configure proxmomx node
+      role: configure_proxmomx
+
+    - name: Create API user terraform
+      role: create_api_user  
     
     - name: Create API user packer
       role: create_api_user_packer 

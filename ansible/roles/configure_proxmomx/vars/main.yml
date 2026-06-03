@@ -1,0 +1,4 @@
+---
+# vars file for configure_proxmomx
+proxmox_hostname: homelab-server
+timezone: Europe/Prague
