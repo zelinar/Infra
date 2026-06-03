@@ -3,7 +3,8 @@
   gather_facts: true
   roles:
     - name: Install prerequisites_and_disable_automatic_updates
-      role: install_prerequisites 
+      role: install_prerequisites
+      tags: [install_prerequisites] 
 
     - name: Upgrade OS
       role: install_updates
@@ -14,22 +15,27 @@
 
     - name: Set hostnames
       role: set_hostname
+      tags: [set_hostname]
       
     - name: Configure /etc/hosts file
       role: configure_hosts_file
+      tags: [configure_hosts]
            
     - name: Sys config
       role: system_configuration
+      tags: [system_config]
       
     - name: Install container runtime 
-      role: install_containerd 
+      role: install_containerd
+      tags: [nstall_containerd]
       
     - name: Install kubernetes packages, kublet,kubeadm,kubectl
       role: install_k8s_components
-      tags: [test]
+      tags: [install_k8s_components]
 
     - name: Initialize k8s cluster
-      role: configure_k8s_cluster   
+      role: configure_k8s_cluster
+      tags: [k8s_cluster_init] 
 
      
 
