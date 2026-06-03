@@ -1,38 +1,76 @@
-Role Name
-=========
+# Role: install_updates
 
-A brief description of the role goes here.
+## 📖 Overview
+This role ensures that all the latest updates and patches are installed on the target nodes. It also handles reboots if required and logs the update results for auditing purposes.
 
-Requirements
-------------
+---
 
-Any pre-requisites that may not be covered by Ansible itself or the role should be mentioned here. For instance, if the role uses the EC2 module, it may be a good idea to mention in this section that the boto package is required.
+## ⚙️ Requirements
+- **Supported OS**: Ubuntu 20.04, Debian 10+
+- **Dependencies**: None
+- **Ansible Version**: 2.9+
 
-Role Variables
---------------
+---
 
-A description of the settable variables for this role should go here, including any variables that are in defaults/main.yml, vars/main.yml, and any variables that can/should be set via parameters to the role. Any variables that are read from other roles and/or the global scope (ie. hostvars, group vars, etc.) should be mentioned here as well.
+## 🧩 Role Variables
+The following variables are used in this role. Customize them as needed in your playbook or inventory files.
 
-Dependencies
-------------
+| Variable Name      | Default Value                  | Description                          |
+|--------------------|--------------------------------|--------------------------------------|
+| `linux_log_path`   | `/tmp/ansible/ansible_update.txt` | Path to the log file for update results. |
+| `linux_log_folder` | `/tmp/ansible/`               | Directory to store log files.        |
 
-A list of other roles hosted on Galaxy should go here, plus any details in regards to parameters that may need to be set for other roles, or variables that are used from other roles.
+---
 
-Example Playbook
-----------------
+## 🚀 Usage
+Here’s an example of how to use this role in your playbook:
 
-Including an example of how to use your role (for instance, with variables passed in as parameters) is always nice for users too:
+```yaml
+- name: Install updates on all nodes
+  hosts: all
+  roles:
+    - role: install_updates
+      vars:
+        linux_log_path: /var/log/ansible_update.log
+        linux_log_folder: /var/log/ansible/
+```
 
-    - hosts: servers
-      roles:
-         - { role: username.rolename, x: 42 }
+---
 
-License
--------
+## 🛠️ Example Playbook
+```yaml
+- name: Apply updates and patches
+  hosts: all
+  gather_facts: true
+  roles:
+    - role: install_updates
+```
 
-BSD
+---
 
-Author Information
-------------------
+## 🔗 Dependencies
+This role has no external dependencies.
 
-An optional section for the role authors to include contact information, or a website (HTML is not allowed).
+---
+
+## 📝 Tasks Overview
+1. **Install Latest Updates**:
+   - Installs all the latest available updates using the package manager.
+2. **Log Update Results**:
+   - Logs the results of the update process to a specified file for auditing.
+3. **Check for Reboot Requirement**:
+   - Checks if a reboot is required after updates.
+4. **Reboot Nodes**:
+   - Reboots the nodes if necessary and notifies the user.
+
+---
+
+## 📜 License
+This role is licensed under the **MIT License**. See the [LICENSE](../../LICENSE) file for details.
+
+---
+
+## 🤝 Author Information
+- **Author**: Your Name
+- **GitHub**: (https://github.com/zelinar)
+```
