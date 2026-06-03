@@ -28,11 +28,10 @@ This repository contains multiple subprojects for managing infrastructure and au
   - `commands`: Scripted commands for validating and building templates.
 
 ### 3. **Terraform**
-- **Description**: Automates the provisioning of infrastructure resources on Proxmox and VirtualBox.
+- **Description**: Automates the provisioning of infrastructure resources on Proxmox.
 - **Key Files**:
   - `api-token-terraform-pve`: Contains API tokens for Terraform (ignored in `.gitignore`).
   - `tf-proxmox/`: Terraform configurations for Proxmox.
-  - `tf-vbox/`: Terraform configurations for VirtualBox.
   - `terraform.tfstate`: Tracks the state of the infrastructure (ignored in `.gitignore`).
 
 ### 4. **General**
