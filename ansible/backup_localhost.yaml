@@ -9,17 +9,24 @@
     user: martin
     backups:
       - Documents
+      - Documents/mypass.kdbx
       - Music
       - Pictures
       - Videos
       - Downloads
+      - .config/keepassxc/
       - .config/BraveSoftware
       - .mozilla
       - .config/Code
       - .vscode/extensions
       - .kube
       - .gitconfig
+      - .git_token
       - .bash_history
+      - .terraform.d
+      - .terraform
+      - .bashrc
+      - .profile
 
 
   tasks:
