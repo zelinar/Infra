@@ -92,17 +92,6 @@ This role is licensed under the **MIT License**. See the [LICENSE](../../LICENSE
 
 ## 🤝 Author Information
 - **Author**: Your Name
-- **GitHub**: [Your GitHub Profile](https://github.com/your-profile)
+- **GitHub**: (https://github.com/zelinar)
 ```
-
-### Explanation:
-1. **Overview**: Describes the purpose of the role.
-2. **Requirements**: Lists prerequisites for using the role.
-3. **Role Variables**: Documents the variables used in the role.
-4. **Usage**: Provides an example of how to include the role in a playbook.
-5. **Example Playbook**: Demonstrates a complete playbook using the role.
-6. **Dependencies**: Notes any external dependencies (none in this case).
-7. **Tasks Overview**: Summarizes the key tasks performed by the role.
-8. **License**: Mentions the license under which the role is distributed.
-9. **Author Information**: Provides a placeholder for the author's details.
 
