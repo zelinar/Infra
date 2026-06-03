@@ -1,9 +1,9 @@
 # Infra repository Overview
 
-![GitHub last commit](https://img.shields.io/github/last-commit/zelinar/infra)
-![GitHub issues](https://img.shields.io/github/zelinar/infra/issues)
-![GitHub pull requests](https://img.shields.io/github/issues-pr/zelinar/infra)
-![GitHub license](https://img.shields.io/github/license/zelinar/infra)
+![GitHub last commit](https://img.shields.io/github/last-commit/zelinar/Infra)
+![GitHub issues](https://img.shields.io/github/issues/zelinar/Infra)
+![GitHub pull requests](https://img.shields.io/github/issues-pr/zelinar/Infra)
+![GitHub license](https://img.shields.io/github/license/zelinar/Infra)
 
 This repository contains multiple subprojects for managing infrastructure and automation. Below is an overview of the subprojects and their purposes.
 
