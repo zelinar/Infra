@@ -12,24 +12,3 @@ argo_root_app_chart: /home/martin/Documents/INFRA/git/Helm_Charts/argocd/core-se
 argo_root_app_values: /home/martin/Documents/INFRA/git/Helm_Charts/argocd/core-services-root-app/values.yaml
 argocd_namespace: argocd
 
-##############
-###METALLB####
-metallb_values: /home/martin/Documents/INFRA/git/Helm_Charts/core_services/metallb/values.yaml
-metallb_chart: /home/martin/Documents/INFRA/git/Helm_Charts/core_services/metallb/
-metallb_ippool_values: /home/martin/Documents/INFRA/git/Helm_Charts/core_services/metallb/custom-ip-pool/values.yaml
-metallb_ippool_chart: /home/martin/Documents/INFRA/git/Helm_Charts/core_services/metallb/custom-ip-pool
-metallb_namespace: metallb
-
-
-##############
-###TRAEFIK####
-traefik_values: /home/martin/Documents/INFRA/git/Helm_Charts/core_services/traefik/values.yaml
-traefik_chart: /home/martin/Documents/INFRA/git/Helm_Charts/core_services/traefik/
-traefik_namespace: traefik
-
-
-##############
-###LONGHORN###
-longhorn_values: /home/martin/Documents/INFRA/git/Helm_Charts/longhorn/values.yaml
-longhorn_chart: /home/martin/Documents/INFRA/git/Helm_Charts/longhorn/
-longhorn_namespace: longhorn-system
