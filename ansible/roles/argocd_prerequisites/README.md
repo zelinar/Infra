@@ -32,3 +32,34 @@ Here’s an example of how to use this role in your playbook:
     - role: argocd_prerequisites
       vars:
         argocd_version: v3.3.6
+```
+
+---
+
+## 🛠️ Example Playbook
+```yaml
+- name: Deploy ArgoCD prerequisites
+  hosts: all
+  gather_facts: true
+  roles:
+    - role: argocd_prerequisites
+      vars:
+        argocd_version: v3.3.6
+```
+
+---
+
+## 🔗 Dependencies
+This role has no external dependencies.
+
+---
+
+## 📜 License
+This role is licensed under the **MIT License**. See the [LICENSE](../../LICENSE) file for details.
+
+---
+
+## 🤝 Author Information
+- **Author**: Your Name
+- **GitHub**: (https://github.com/zelinar)
+```

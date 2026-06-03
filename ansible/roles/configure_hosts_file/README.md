@@ -31,3 +31,32 @@ Here’s an example of how to use this role in your playbook:
     - role: configure_hosts_file
       vars:
         hosts_dest: /etc/hosts
+```
+
+---
+
+## 🛠️ Example Playbook
+```yaml
+- name: Configure hosts file for Kubernetes cluster
+  hosts: all
+  gather_facts: true
+  roles:
+    - role: configure_hosts_file
+```
+
+---
+
+## 🔗 Dependencies
+This role has no external dependencies.
+
+---
+
+## 📜 License
+This role is licensed under the **MIT License**. See the [LICENSE](../../LICENSE) file for details.
+
+---
+
+## 🤝 Author Information
+- **Author**: Your Name
+- **GitHub**: (https://github.com/zelinar)
+```
