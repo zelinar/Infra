@@ -57,6 +57,5 @@ This role is licensed under the **MIT License**. See the [LICENSE](../../LICENSE
 ---
 
 ## 🤝 Author Information
-- **Author**: Your Name
-- **GitHub**: (https://github.com/zelinar)
+- **GitHub**: [zelinar](https://github.com/zelinar)
 ```
