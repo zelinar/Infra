@@ -1,38 +1,89 @@
-Role Name
-=========
 
-A brief description of the role goes here.
+# Role: configure_k8s_cluster
 
-Requirements
-------------
+## 📖 Overview
+This role is responsible for initializing and configuring a Kubernetes cluster on the control plane and worker nodes. It sets up the cluster, applies the necessary configurations, and ensures that all nodes are properly joined to the cluster.
 
-Any pre-requisites that may not be covered by Ansible itself or the role should be mentioned here. For instance, if the role uses the EC2 module, it may be a good idea to mention in this section that the boto package is required.
+---
 
-Role Variables
---------------
+## ⚙️ Requirements
+- **Supported OS**: Linux-based systems
+- **Dependencies**:
+  - Kubernetes packages (`kubeadm`, `kubectl`, `kubelet`) must be installed.
+  - Container runtime (e.g., `containerd`) must be configured.
+- **Ansible Version**: 2.9+
 
-A description of the settable variables for this role should go here, including any variables that are in defaults/main.yml, vars/main.yml, and any variables that can/should be set via parameters to the role. Any variables that are read from other roles and/or the global scope (ie. hostvars, group vars, etc.) should be mentioned here as well.
+---
 
-Dependencies
-------------
+## 🧩 Role Variables
+The following variables are used in this role. Customize them as needed in your playbook or inventory files.
 
-A list of other roles hosted on Galaxy should go here, plus any details in regards to parameters that may need to be set for other roles, or variables that are used from other roles.
+| Variable Name         | Default Value                                   | Description                                      |
+|-----------------------|-------------------------------------------------|--------------------------------------------------|
+| `home_owner`          | `martin`                                       | The owner of the home directory for kubeconfig. |
+| `ansible_home`        | `/home/ansible`                                | The home directory for the Ansible user.        |
+| `kubernetes_folder`   | `/etc/kubernetes`                              | Path to Kubernetes configuration files.         |
+| `calico_url`          | `https://raw.githubusercontent.com/projectcalico/calico/v3.32.0/manifests/calico.yaml` | URL for Calico CNI plugin.                      |
+| `pod_cidr`            | `190.160.0.0/16`                               | CIDR for the Kubernetes pod network.            |
+| `k8s_version`         | `1.33.3`                                       | Kubernetes version to initialize the cluster.   |
 
-Example Playbook
-----------------
+---
 
-Including an example of how to use your role (for instance, with variables passed in as parameters) is always nice for users too:
+## 🚀 Usage
+Here’s an example of how to use this role in your playbook:
 
-    - hosts: servers
-      roles:
-         - { role: username.rolename, x: 42 }
+```yaml
+- name: Configure Kubernetes Cluster
+  hosts: control_plane, workers
+  roles:
+    - role: configure_k8s_cluster
+      vars:
+        pod_cidr: 192.168.0.0/16
+        k8s_version: 1.24.0
+```
 
-License
--------
+---
 
-BSD
+## 🛠️ Example Playbook
+```yaml
+- name: Initialize Kubernetes Cluster
+  hosts: control_plane, workers
+  gather_facts: true
+  roles:
+    - role: configure_k8s_cluster
+      vars:
+        pod_cidr: 192.168.0.0/16
+        k8s_version: 1.24.0
+```
 
-Author Information
-------------------
+---
 
-An optional section for the role authors to include contact information, or a website (HTML is not allowed).
+## 🔗 Dependencies
+This role depends on the following:
+- `install_k8s_components`: Ensures Kubernetes packages are installed.
+- `install_containerd`: Configures the container runtime.
+
+---
+
+## 📝 Tasks Overview
+1. **Initialize Control Plane**:
+   - Runs `kubeadm init` to initialize the control plane.
+   - Configures the `.kube/config` file for the control plane.
+2. **Configure Networking**:
+   - Deploys the Calico CNI plugin for networking.
+3. **Join Worker Nodes**:
+   - Generates the `kubeadm join` command on the control plane.
+   - Executes the join command on worker nodes to add them to the cluster.
+4. **Fetch Kubeconfig**:
+   - Copies the `admin.conf` file to the local machine for cluster management.
+
+---
+
+## 📜 License
+This role is licensed under the **MIT License**. See the [LICENSE](../../LICENSE) file for details.
+
+---
+
+## 🤝 Author Information
+- **GitHub**: (https://github.com/zelinar)
+```
