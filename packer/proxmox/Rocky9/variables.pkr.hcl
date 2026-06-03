@@ -1,170 +1,74 @@
-# Variable Definitions
-variable "proxmox_api_url" {
-    type = string
-    default = null
-}
-
-variable "proxmox_api_token_id" {
-    type = string
-    default = null
-}
-
-variable "proxmox_api_token_secret" {
-    type      = string
-    sensitive = true
-    default = null
-}
-
-variable "skip_tls" {
-    type = bool
-    default = true
-}
-
-#VM settings
+# VM General Settings
 variable "proxmox_node" {
-    type = string
-    default = "homelab-server"
+  default = "pve"
 }
-
 variable "vm_id" {
-    type = string
-    default = "250"
+  default = 9001
 }
-
 variable "template_name" {
-    type = string
-    default = "rocky9-template"
+  default = "rocky9-template"
 }
-
 variable "template_description" {
-    type = string
-    default = "Rocky Linux 9 cloud-init ready (built by Packer)"
+  default = "Rocky Linux 9 template created with Packer"
 }
 
+# VM OS Settings
 variable "iso_type" {
-    type = string
-    default = "scsi"
+  default = "iso"
 }
-
 variable "iso_file" {
-    type = string
-    default = "VM-storage:iso/rocky9.iso"
+  default = "VM-storage:iso/rocky9.iso"
 }
-
-variable "unmount" {
-    type = bool
-    default = true
-}
-
 variable "iso_checksum" {
-    type = string
-    default = "d6dab0c3a657988501b4bd76f1297c053df710e06e0c3aece60dead24f270b4d"
+  default = "sha256:your-rocky9-iso-checksum"
+}
+variable "unmount" {
+  default = true
 }
 
+# VM System Settings
 variable "qemu_agent" {
-    type = bool
-    default = true
+  default = true
 }
 
-#VM HW settings
+# VM Hardware Settings
 variable "scsi_controller" {
-    type = string
-    default = "virtio-scsi-pci"
+  default = "virtio-scsi-pci"
 }
-
-variable "disk_storage" {
-    type = string
-    default = "local-lvm"
-}
-
 variable "disk_size" {
-    type = string
-    default = "25G"
+  default = "20G"
 }
-
 variable "disk_format" {
-    type = string
-    default = "qcow2"
+  default = "qcow2"
 }
-
 variable "storage_pool" {
-    type = string
-    default = "VM-storage"
+  default = "local-lvm"
 }
-
 variable "disk_type" {
-    type = string
-    default = "scsi"
+  default = "scsi"
 }
-
 variable "cpu_cores" {
-    type = number
-    default = 2
+  default = 2
 }
-
 variable "memory" {
-    type = number
-    default = 2048
+  default = 2048
 }
 
-#VM Cloud-Init Settings
-variable "cloud_init_enabled" {
-    type = bool
-    default = true
-}
-
-variable "cloud_init_storage" {
-    type = string
-    default = "VM-storage"
-}
-
-#VM Network settings
+# VM Network Settings
 variable "network_model" {
-    type = string
-    default = "virtio"
+  default = "virtio"
 }
-
 variable "network_bridge" {
-    type = string
-    default = "vmbr0"
+  default = "vmbr0"
 }
-
 variable "firewall" {
-    type = bool
-    default = false
+  default = false
 }
 
-# PACKER Autoinstall Settings
-variable "http_dir" {
-    type = string
-    default = "http"
+# Cloud-Init Settings
+variable "cloud_init_enabled" {
+  default = true
 }
-
-# (Optional) Bind IP Address and Port to packer httpd server on which it serves cloud-init config - same as IP of machine from you run packer
-# must be reachable from vlan where you deploying packer image
-variable "http_ip" {
-    type = string
-    default = "10.10.10.10"
-}
-
-variable "http_port_min" {
-    type = number
-    default = 8802
-}
-
-variable "http_port_max" {
-    type = number
-    default = 8802
-}
-
-# Credentials
-variable "ssh_username" {
-    type = string
-    default = "ansible"
-}
-
-variable "ssh_psw" {
-    type = string
-    default = "Ansible-23!"
-    sensitive = true
+variable "cloud_init_storage" {
+  default = "local-lvm"
 }

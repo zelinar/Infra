@@ -21,7 +21,6 @@ secrets.yml
 .terraform/
 terraform.tfstate
 terraform.tfstate.*
-*.tfvars
 *.backup
 crash.log
 *.plan
