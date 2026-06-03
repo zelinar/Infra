@@ -10,39 +10,15 @@ This directory contains Packer configurations for building VM templates on a Pro
 .packer/
 ├── proxmox/
 │   ├── Ubuntu24/
-│   │   ├── 
-
-ubuntu24.pkr.hcl
-
-          # Packer template for Ubuntu 24
-│   │   ├── 
-
-variables.pkr.hcl
-
-         # Variable definitions for Ubuntu 24
-│   │   ├── 
-
-override.pkrvars.hcl
-
-      # Override variables for customization
+│   │   ├── [ubuntu24.pkr.hcl](http://_vscodecontentref_/1)          # Packer template for Ubuntu 24
+│   │   ├── [variables.pkr.hcl](http://_vscodecontentref_/2)         # Variable definitions for Ubuntu 24
+│   │   ├── [override.pkrvars.hcl](http://_vscodecontentref_/3)      # Override variables for customization
 │   │   ├── http/                     # HTTP directory for cloud-init configurations
 │   │   │   ├── user-data             # Cloud-init user data for Ubuntu 24
 │   ├── Rocky9/
-│   │   ├── 
-
-rocky9.frmbuntu
-
-           # Packer template for Rocky Linux 9
-│   │   ├── 
-
-variables.pkr.hcl
-
-         # Variable definitions for Rocky Linux 9
-│   │   ├── 
-
-override.pkrvars.hcl
-
-      # Override variables for customization
+│   │   ├── [rocky9.frmbuntu](http://_vscodecontentref_/4)           # Packer template for Rocky Linux 9
+│   │   ├── [variables.pkr.hcl](http://_vscodecontentref_/5)         # Variable definitions for Rocky Linux 9
+│   │   ├── [override.pkrvars.hcl](http://_vscodecontentref_/6)      # Override variables for customization
 ├── commands                          # Scripted commands for validating and building templates
 ```
 
