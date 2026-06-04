@@ -1,5 +1,8 @@
 # Infra repository Overview
-
+![GitHub repo size](https://img.shields.io/github/repo-size/zelinar/Infra)
+![GitHub contributors](https://img.shields.io/github/contributors/zelinar/Infra)
+![GitHub stars](https://img.shields.io/github/stars/zelinar/Infra?style=social)
+![GitHub forks](https://img.shields.io/github/forks/zelinar/Infra?style=social)
 ![GitHub last commit](https://img.shields.io/github/last-commit/zelinar/Infra)
 ![GitHub issues](https://img.shields.io/github/issues/zelinar/Infra)
 ![GitHub pull requests](https://img.shields.io/github/issues-pr/zelinar/Infra)
