@@ -1,5 +1,5 @@
 - name: Deploy ArgoCD to the cluster
-  hosts: control_plane_dev, workers_dev
+  hosts: control_plane_management, workers_management
   gather_facts: true
   roles:
     - name: ArgoCD prerequisites

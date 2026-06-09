@@ -2,7 +2,7 @@
 # vars file for deploy_cluster_addons
 home_owner: martin
 #kubeconfig_path: /home/martin/.kube/admin_k8s-02-control-plane.conf
-kubeconfig_path: /home/martin/.kube/admin_k8s-workload-dev-control-plane.conf
+kubeconfig_path: /home/martin/.kube/admin_k8s-management-control-plane.conf
 
 ##############
 ###ARGOCD#####
